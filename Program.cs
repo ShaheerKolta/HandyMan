@@ -1,5 +1,11 @@
 using HandyMan.Data;
+using HandyMan.Repository;
+using HandyMan.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -9,7 +15,44 @@ Newtonsoft.Json.ReferenceLoopHandling.Ignore); ;
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<IClientRepository, ClientRepository>();
+builder.Services.AddScoped<IHandymanRepository, HandymanRepository>();
 builder.Services.AddDbContext<Handyman_DBContext>(a=>a.UseLazyLoadingProxies().UseSqlServer(builder.Configuration.GetConnectionString("db")));
+
+
+builder.Services.AddAuthorization(opt =>
+{
+    opt.AddPolicy("Admin", p =>
+    {
+        p.RequireClaim("Role", "Admin");
+    });
+    opt.AddPolicy("Handyman", p =>
+    {
+        p.RequireClaim("Role", "Handyman");
+    });
+
+    opt.AddPolicy("Client", p =>
+    {
+        p.RequireClaim("Role", "Client");
+    });
+    opt.FallbackPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+});
+
+builder.Services.AddAuthentication("Bearer").AddJwtBearer(opt =>
+{
+    opt.TokenValidationParameters = new()
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration.GetValue<string>("Authentication:Issuer"),
+        ValidAudience = builder.Configuration.GetValue<string>("Authentication:Audience"),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(
+            builder.Configuration.GetValue<string>("Authentication:SecretKey")))
+    };
+});
+
+
 
 var app = builder.Build();
 
@@ -22,6 +65,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

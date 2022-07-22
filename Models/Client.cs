@@ -38,12 +38,26 @@ namespace HandyMan.Models
         public string Client_Mobile { get; set; }
         [StringLength(50)]
         [Unicode(false)]
+        [DataType(DataType.Password)]
         public string Password { get; set; }
+
+        [NotMapped]
+        [Compare("Password")]
+        [DataType(DataType.Password)]
+        public string CPassword { get; set; }
 
         [ForeignKey("Region_ID")]
         [InverseProperty("Clients")]
-        public virtual Region Region { get; set; }
+        public virtual Region? Region { get; set; }
         [InverseProperty("Client")]
-        public virtual ICollection<Request> Requests { get; set; }
+        public virtual ICollection<Request>? Requests { get; set; }
+
+        [NotMapped]
+        [Range(-99, 99)]
+        public double Balance { get; set; }
+
+        [NotMapped]
+        [Range(1,5)]
+        public double Rating { get; set; }
     }
 }
