@@ -17,14 +17,14 @@ namespace HandyMan.Controllers
         private readonly IConfiguration config;
         private readonly IHandymanRepository handymanRepository;
         private readonly IClientRepository clientRepository;
-        public AuthenticationController(IConfiguration _config , IHandymanRepository _handymanRepository,IClientRepository _clientRepository)
+        public AuthenticationController(IConfiguration _config, IHandymanRepository _handymanRepository, IClientRepository _clientRepository)
         {
             config = _config;
             handymanRepository = _handymanRepository;
             clientRepository = _clientRepository;
         }
 
-        public record AuthenticationData(string? UserName, string? Password , string? Role);
+        public record AuthenticationData(string? UserName, string? Password, string? Role);
         public record UserData(int Id, string UserName, string Role);
 
         [HttpPost("token")]
@@ -51,7 +51,7 @@ namespace HandyMan.Controllers
             claims.Add(new(JwtRegisteredClaimNames.Sub, user.Id.ToString()));
             claims.Add(new(JwtRegisteredClaimNames.UniqueName, user.UserName.ToString()));
             claims.Add(new("Role", user.Role));
-            
+
 
 
             var token = new JwtSecurityToken(
@@ -80,7 +80,7 @@ namespace HandyMan.Controllers
             ////////////////////////////////////////////////////////////
 
             //not for production
-            if(data.Role == "Handyman")
+            if (Compare( data.Role , "Handyman"))
             {
                 Handyman handyman = await handymanRepository.GetHandymanByIdAsync(int.Parse(data.UserName));
                 if (handyman == null)
@@ -93,9 +93,9 @@ namespace HandyMan.Controllers
 
             }
 
-            else if (data.Role == "Client")
+            else if (Compare(data.Role , "Client"))
             {
-                Client client =  clientRepository.GetClientByEmail(data.UserName);
+                Client client = clientRepository.GetClientByEmail(data.UserName);
                 if (client == null)
                     return null;
                 if (Compare(data.UserName, client.Client_ID.ToString()) && Compare(data.Password, client.Password))
@@ -105,14 +105,14 @@ namespace HandyMan.Controllers
                 else return null;
 
             }
-            else if(data.Role == "Admin")
+            else if (Compare(data.Role, "Admin"))
             {
                 if (Compare(data.UserName, "admin") && Compare(data.Password, "admin"))
                 {
                     return new UserData(1, data.UserName!, "Admin");
                 }
             }
-            
+
 
 
             return null;
@@ -129,6 +129,6 @@ namespace HandyMan.Controllers
             }
             return false;
         }
-    
+
     }
 }

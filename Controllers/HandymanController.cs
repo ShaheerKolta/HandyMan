@@ -14,7 +14,7 @@ namespace HandyMan.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy ="Admin")]
+    
     public class HandymanController : ControllerBase
     {
         private readonly IHandymanRepository handymanRepository;
@@ -27,6 +27,7 @@ namespace HandyMan.Controllers
         // GET: api/Handyman
         [HttpGet]
         [AllowAnonymous]
+        
         public async Task<ActionResult<IEnumerable<Handyman>>> GetHandyman()
         {
             try
@@ -43,6 +44,7 @@ namespace HandyMan.Controllers
         //is the same attributes going to show to user and handyman himself ??
         [HttpGet("{id}")]
         [Authorize(Policy = "Handyman")]
+        
         public async Task<ActionResult<Handyman>> GetHandyman(int id)
         {
             try
@@ -63,7 +65,7 @@ namespace HandyMan.Controllers
         // PUT: api/Handyman/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        [Authorize(Policy ="Handyman")]
+        [Authorize(Policy = "Handyman")]
         public async Task<IActionResult> EditHandyman(int id, Handyman handyman)
         {
             if (id != handyman.Handyman_SSN)
@@ -77,11 +79,11 @@ namespace HandyMan.Controllers
             {
                 await handymanRepository.SaveAllAsync();
             }
-            catch 
+            catch
             {
-                
-                    return NotFound();
-                
+
+                return NotFound();
+
             }
 
             return NoContent();
@@ -93,10 +95,10 @@ namespace HandyMan.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<Handyman>> PostHandyman(Handyman handyman)
         {
-          if (handyman == null)
-          {
-              return Problem("Handyman is Empty");
-          }
+            if (handyman == null)
+            {
+                return Problem("Handyman is Empty");
+            }
             handymanRepository.CreateHandyman(handyman);
             try
             {
@@ -104,7 +106,7 @@ namespace HandyMan.Controllers
             }
             catch (DbUpdateException)
             {
-                if (handymanRepository.GetHandymanByIdAsync(handyman.Handyman_SSN) !=null)
+                if (handymanRepository.GetHandymanByIdAsync(handyman.Handyman_SSN) != null)
                 {
                     return Conflict();
                 }
@@ -122,7 +124,7 @@ namespace HandyMan.Controllers
         [Authorize(Policy = "Handyman")]
         public async Task<IActionResult> DeleteHandyman(int id)
         {
-            
+
             var handyman = await handymanRepository.GetHandymanByIdAsync(id);
             if (handyman == null)
             {
@@ -142,6 +144,6 @@ namespace HandyMan.Controllers
             return NoContent();
         }
 
-       
+
     }
 }

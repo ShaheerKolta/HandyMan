@@ -14,7 +14,7 @@ namespace HandyMan.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = "Admin")]
+    
     public class ClientController : ControllerBase
     {
         private readonly IClientRepository _clientRepository;
@@ -26,7 +26,7 @@ namespace HandyMan.Controllers
 
         // GET: api/Client
         [HttpGet]
-        
+        [Authorize(Policy = "Admin")]
         public async Task<ActionResult<IEnumerable<Client>>> GetClients()
         {
             try

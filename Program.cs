@@ -22,18 +22,19 @@ builder.Services.AddDbContext<Handyman_DBContext>(a=>a.UseLazyLoadingProxies().U
 
 builder.Services.AddAuthorization(opt =>
 {
+    
     opt.AddPolicy("Admin", p =>
     {
         p.RequireClaim("Role", "Admin");
     });
     opt.AddPolicy("Handyman", p =>
     {
-        p.RequireClaim("Role", "Handyman");
+        p.RequireClaim("Role", "Handyman","Admin");
     });
 
     opt.AddPolicy("Client", p =>
     {
-        p.RequireClaim("Role", "Client");
+        p.RequireClaim("Role", "Client","Admin");
     });
     opt.FallbackPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
 });
