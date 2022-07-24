@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using HandyMan.Interfaces;
 using HandyMan.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HandyMan.Controllers
 {
@@ -27,6 +28,7 @@ namespace HandyMan.Controllers
 
         // GET: api/Client
         [HttpGet]
+        [Authorize(Policy ="Admin")]
         public async Task<ActionResult<IEnumerable<ClientDto>>> GetClients()
         {
             try
@@ -43,6 +45,7 @@ namespace HandyMan.Controllers
 
         // GET: api/Client/5
         [HttpGet("{id}")]
+        [Authorize(Policy = "Client")]
         public async Task<ActionResult<ClientDto>> GetClient(int id)
         {
             try
@@ -63,6 +66,7 @@ namespace HandyMan.Controllers
         // PUT: api/Client/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [Authorize(Policy = "Client")]
         public async Task<IActionResult> EditClient(int id, ClientDto clientDto)
         {
             if (id != clientDto.Client_ID)
@@ -87,6 +91,7 @@ namespace HandyMan.Controllers
         // POST: api/Client
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [AllowAnonymous]
         public async Task<ActionResult<ClientDto>> PostClient(ClientDto clientDto)
         {
             if (clientDto == null)
@@ -116,6 +121,7 @@ namespace HandyMan.Controllers
 
         // DELETE: api/Client/5
         [HttpDelete("{id}")]
+        [Authorize(Policy = "Client")]
         public async Task<IActionResult> DeleteClient(int id)
         {
             try
