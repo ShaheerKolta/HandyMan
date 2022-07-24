@@ -35,7 +35,7 @@ namespace HandyMan.Controllers
             if (user == null)
                 return Unauthorized();
             var token = GenerateToken(user);
-            return Ok(token);
+            return Ok( new {token=token});
         }
 
         private string GenerateToken(UserData user)
@@ -95,7 +95,7 @@ namespace HandyMan.Controllers
 
             else if (Compare(data.Role , "Client"))
             {
-                Client client = clientRepository.GetClientByEmail(data.UserName);
+                Client client = await clientRepository.GetClientByEmail(data.UserName);
                 if (client == null)
                     return null;
                 if (Compare(data.UserName, client.Client_ID.ToString()) && Compare(data.Password, client.Password))

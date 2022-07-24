@@ -24,6 +24,13 @@ namespace HandyMan.Repository
             return await _context.Clients.FindAsync(id);
         }
 
+        public async Task<Client> GetClientByEmail(string email)
+        {
+
+            var client = await _context.Clients.SingleOrDefaultAsync(c => c.Client_Email == email);
+            return client;
+        }
+
         public async void CreateClient(Client client)
         {
             await _context.Clients.AddAsync(client);
@@ -41,14 +48,6 @@ namespace HandyMan.Repository
         public async Task<bool> SaveAllAsync()
         {
             return await _context.SaveChangesAsync() > 0;
-        }
-
-        public Client GetClientByEmail(string email)
-        {
-           
-            var client = (from c in _context.Clients where c.Client_Email == email select c).First();
-        
-            return (Client)client;
         }
     }
 }
