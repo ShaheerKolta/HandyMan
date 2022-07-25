@@ -27,7 +27,7 @@ namespace HandyMan.Controllers
         public record AuthenticationData(string? UserName, string? Password, string? Role);
         public record UserData(int Id, string UserName, string Role);
 
-        [HttpPost("token")]
+        [HttpPost]
         [AllowAnonymous]
         public async Task<ActionResult<string>> Authenticate([FromBody] AuthenticationData data)
         {

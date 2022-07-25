@@ -9,9 +9,20 @@ namespace HandyMan.Helpers
     {
         public MappingProfile()
         {
+            //Client DTO
             CreateMap<ClientDto, Client>();
 
             CreateMap<Client, ClientDto>();
+
+
+            //Handyman Dto
+
+            CreateMap<HandymanDto, Handyman>();
+
+            CreateMap<Handyman, HandymanDto>();
+
+
+            //Request Dto
 
             CreateMap<Request, RequestDto>();
 

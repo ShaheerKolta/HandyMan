@@ -9,6 +9,9 @@ using HandyMan.Data;
 using HandyMan.Models;
 using HandyMan.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using System.IdentityModel.Tokens.Jwt;
+using AutoMapper;
+using HandyMan.Dtos;
 
 namespace HandyMan.Controllers
 {
@@ -18,10 +21,12 @@ namespace HandyMan.Controllers
     public class HandymanController : ControllerBase
     {
         private readonly IHandymanRepository handymanRepository;
+        private readonly IMapper _mapper;
 
-        public HandymanController(IHandymanRepository _handymanRepository)
+        public HandymanController(IHandymanRepository _handymanRepository, IMapper mapper)
         {
             handymanRepository = _handymanRepository;
+            _mapper = mapper;
         }
 
         // GET: api/Handyman
@@ -32,7 +37,9 @@ namespace HandyMan.Controllers
         {
             try
             {
-                return Ok(await handymanRepository.GetHandyManAsync());
+                var handymen = await handymanRepository.GetHandyManAsync();
+                var res = _mapper.Map<IEnumerable<HandymanDto>>(handymen);
+                return Ok(res);
             }
             catch
             {
@@ -45,16 +52,26 @@ namespace HandyMan.Controllers
         [HttpGet("{id}")]
         [Authorize(Policy = "Handyman")]
         
-        public async Task<ActionResult<Handyman>> GetHandyman(int id)
+        public async Task<ActionResult<HandymanDto>> GetHandyman(int id, [FromHeader] string Authorization)
         {
+            JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
+            var x = t.Claims.ToList();
+            
+            var c = x[0];
+            if (x[0].Value !=id.ToString())
+            {
+                return Unauthorized();
+            }
             try
             {
-                Handyman handyman = await handymanRepository.GetHandymanByIdAsync(id);
+                
+                var handyman = await handymanRepository.GetHandymanByIdAsync(id);
                 if (handyman == null)
                 {
                     return NotFound(new { message = "Client Is Not Found!" });
                 }
-                return handyman;
+                return _mapper.Map<HandymanDto>(handyman);
+
             }
             catch
             {
@@ -66,13 +83,13 @@ namespace HandyMan.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         [Authorize(Policy = "Handyman")]
-        public async Task<IActionResult> EditHandyman(int id, Handyman handyman)
+        public async Task<IActionResult> EditHandyman(int id, HandymanDto handymandto)
         {
-            if (id != handyman.Handyman_SSN)
+            if (id != handymandto.Handyman_SSN)
             {
                 return BadRequest();
             }
-
+            var handyman = _mapper.Map<Handyman>(handymandto);
             handymanRepository.EditHandyman(handyman);
 
             try
@@ -93,12 +110,13 @@ namespace HandyMan.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         [AllowAnonymous]
-        public async Task<ActionResult<Handyman>> PostHandyman(Handyman handyman)
+        public async Task<ActionResult<Handyman>> PostHandyman(HandymanDto handymandto)
         {
-            if (handyman == null)
+            if (handymandto == null)
             {
                 return Problem("Handyman is Empty");
             }
+            var handyman = _mapper.Map<Handyman>(handymandto);
             handymanRepository.CreateHandyman(handyman);
             try
             {
@@ -112,7 +130,7 @@ namespace HandyMan.Controllers
                 }
                 else
                 {
-                    throw;
+                    return BadRequest();
                 }
             }
 
@@ -142,6 +160,14 @@ namespace HandyMan.Controllers
             }
 
             return NoContent();
+        }
+        [HttpGet("status/{id}")]
+        [Authorize(Policy ="Handyman")]
+        public async Task<IActionResult> ToggleHandymanStatus(int id)
+        {
+            Handyman handyman = await handymanRepository.GetHandymanByIdAsync(id);
+            handyman.Open_For_Work = !handyman.Open_For_Work;
+            return Ok();
         }
 
 
