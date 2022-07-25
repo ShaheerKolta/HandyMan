@@ -11,5 +11,6 @@ namespace HandyMan.Interfaces
         void EditClient(Client client);
         void DeleteClientById(int id);
         Task<bool> SaveAllAsync();
+        Task<IEnumerable<Handyman>> GetHandymenAsync();
     }
 }

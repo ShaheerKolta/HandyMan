@@ -49,5 +49,10 @@ namespace HandyMan.Repository
         {
             return await _context.SaveChangesAsync() > 0;
         }
+
+        public async Task<IEnumerable<Handyman>> GetHandymenAsync()
+        {
+            return await _context.Handymen.OrderByDescending(s => s.Handyman_Fixed_Rate).ToListAsync();
+        }
     }
 }

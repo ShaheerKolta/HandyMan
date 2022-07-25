@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -43,11 +44,36 @@ namespace HandyMan.Controllers
             }
         }
 
+        // GET: api/Client
+        [HttpGet("FindHandymen")]
+        [AllowAnonymous]
+        public async Task<ActionResult<IEnumerable<HandymanDto>>> GetHandymen()
+        {
+            try
+            {
+                var handymen = await _clientRepository.GetHandymenAsync();
+                var handymenToReturn = _mapper.Map<IEnumerable<HandymanDto>>(handymen);
+                return Ok(handymenToReturn);
+            }
+            catch
+            {
+                return NotFound(new { message = "Empty!" });
+            }
+        }
+
         // GET: api/Client/5
         [HttpGet("{id:int}")]
         [Authorize(Policy ="Client")]
-        public async Task<ActionResult<ClientDto>> GetClient(int id)
+        public async Task<ActionResult<ClientDto>> GetClient(int id, [FromHeader] string Authorization)
         {
+            JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
+            var x = t.Claims.ToList();
+
+            var c = x[0];
+            if (x[0].Value != id.ToString())
+            {
+                return Unauthorized();
+            }
             try
             {
                 var client = await _clientRepository.GetClientByIdAsync(id);

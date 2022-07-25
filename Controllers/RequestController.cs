@@ -81,6 +81,7 @@ namespace HandyMan.Controllers
         // PUT: api/Request/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> EditRequest(int id, RequestDto requestDto)
         {
             if (id != requestDto.Request_ID)
@@ -105,6 +106,7 @@ namespace HandyMan.Controllers
         // POST: api/Request
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize(Policy = "Client")]
         public async Task<ActionResult<RequestDto>> PostRequest(RequestDto requestDto)
         {
             if (requestDto == null)
@@ -133,6 +135,8 @@ namespace HandyMan.Controllers
 
         // DELETE: api/Request/5
         [HttpDelete("{id}")]
+        // Admin or Handyman
+        [Authorize(Policy = "Handyman")] // If Handyman -> Decline -> delete ? or cancelled ??
         public async Task<IActionResult> DeleteRequest(int id)
         {
             try

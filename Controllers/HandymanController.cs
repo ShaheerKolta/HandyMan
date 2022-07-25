@@ -134,7 +134,7 @@ namespace HandyMan.Controllers
                 }
             }
 
-            return CreatedAtAction("GetHandyman", new { id = handyman.Handyman_SSN }, handyman);
+            return CreatedAtAction("GetHandyman", new { id = handymandto.Handyman_SSN }, handymandto);
         }
 
         // DELETE: api/Handyman/5
