@@ -6,6 +6,7 @@ namespace HandyMan.Interfaces
     {
         Task<IEnumerable<Request>> GetRequestsAsync();
         Task<Request> GetRequestByIdAsync(int id);
+        Task<IEnumerable<Request>> GetRequestsByHandymanSsnAsync(int handymanSsn);
         void CreateRequest(Request request);
         void EditRequest(Request request);
         void DeleteRequestById(int id);

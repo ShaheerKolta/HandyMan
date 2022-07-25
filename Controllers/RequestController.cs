@@ -42,9 +42,10 @@ namespace HandyMan.Controllers
                 return NotFound(new { message = "Empty!" });
             }
         }
-
+        
         // GET: api/Request/5
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
+        [Authorize(Policy = "Admin")]
         public async Task<ActionResult<RequestDto>> GetRequest(int id)
         {
             try
@@ -59,6 +60,21 @@ namespace HandyMan.Controllers
             catch
             {
                 return NotFound();
+            }
+        }
+        [HttpGet("handyman/{handymanSsn}")]
+        [Authorize(Policy = "Handyman")]
+        public async Task<ActionResult<IEnumerable<RequestDto>>> GetRequestsByHandymanSsn(int handymanSsn)
+        {
+            try
+            {
+                var requests = await _requestRepository.GetRequestsByHandymanSsnAsync(handymanSsn);
+                var requestsToReturn = _mapper.Map<IEnumerable<RequestDto>>(requests);
+                return Ok(requestsToReturn);
+            }
+            catch
+            {
+                return NotFound(new { message = "Empty!" });
             }
         }
 
