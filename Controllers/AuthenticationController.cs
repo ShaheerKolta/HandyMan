@@ -31,11 +31,19 @@ namespace HandyMan.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<string>> Authenticate([FromBody] AuthenticationData data)
         {
-            var user = await ValidateCredentials(data);
-            if (user == null)
-                return Unauthorized();
-            var token = GenerateToken(user);
-            return Ok( new {token=token});
+            try
+            {
+                var user = await ValidateCredentials(data);
+                if (user == null)
+                    return Unauthorized();
+                var token = GenerateToken(user);
+                return Ok(new { token = token });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
 
         private string GenerateToken(UserData user)
@@ -96,9 +104,10 @@ namespace HandyMan.Controllers
             else if (Compare(data.Role , "Client"))
             {
                 Client client = await clientRepository.GetClientByEmail(data.UserName);
+                
                 if (client == null)
                     return null;
-                if (Compare(data.UserName, client.Client_ID.ToString()) && Compare(data.Password, client.Password))
+                if (Compare(data.UserName, client.Client_Email) && Compare(data.Password, client.Password))
                 {
                     return new UserData(client.Client_ID, client.Client_name, "Client");
                 }

@@ -44,13 +44,32 @@ namespace HandyMan.Controllers
         }
 
         // GET: api/Client/5
-        [HttpGet("{id}")]
-        [Authorize(Policy = "Client")]
+        [HttpGet("{id:int}")]
+        [Authorize(Policy ="Client")]
         public async Task<ActionResult<ClientDto>> GetClient(int id)
         {
             try
             {
                 var client = await _clientRepository.GetClientByIdAsync(id);
+                if (client == null)
+                {
+                    return NotFound(new { message = "Client Is Not Found!" });
+                }
+                return _mapper.Map<ClientDto>(client);
+            }
+            catch
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpGet("{email}")]
+        
+        public async Task<ActionResult<ClientDto>> GetClientByEmail(string email)
+        {
+            try
+            {
+                Client client = await _clientRepository.GetClientByEmail(email);
                 if (client == null)
                 {
                     return NotFound(new { message = "Client Is Not Found!" });
