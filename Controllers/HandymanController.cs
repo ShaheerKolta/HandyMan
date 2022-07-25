@@ -52,16 +52,16 @@ namespace HandyMan.Controllers
         [HttpGet("{id}")]
         [Authorize(Policy = "Handyman")]
         
-        public async Task<ActionResult<HandymanDto>> GetHandyman(int id)
+        public async Task<ActionResult<HandymanDto>> GetHandyman(int id, [FromHeader] string Authorization)
         {
-
-            /*JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(token);
-            var x =t.Payload.Claims.ToList();
+            JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
+            var x = t.Claims.ToList();
             
-            if (x[3].ToString() ==id.ToString())
+            var c = x[0];
+            if (x[0].Value !=id.ToString())
             {
-                return Ok();
-            }*/
+                return Unauthorized();
+            }
             try
             {
                 
