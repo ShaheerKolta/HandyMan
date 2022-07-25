@@ -64,6 +64,7 @@ namespace HandyMan.Controllers
         }
         [HttpGet("handyman/{handymanSsn}")]
         [Authorize(Policy = "Handyman")]
+
         public async Task<ActionResult<IEnumerable<RequestDto>>> GetRequestsByHandymanSsn(int handymanSsn)
         {
             try
@@ -141,6 +142,7 @@ namespace HandyMan.Controllers
         {
             try
             {
+               // _requestRepository.EditRequest(_mapper.Map<Request>(id));
                 _requestRepository.DeleteRequestById(id);
                 await _requestRepository.SaveAllAsync();
             }

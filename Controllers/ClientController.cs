@@ -44,6 +44,8 @@ namespace HandyMan.Controllers
             }
         }
 
+
+        // to be Checked With Amal Tommorow 
         // GET: api/Client
         [HttpGet("FindHandymen")]
         [AllowAnonymous]
@@ -64,10 +66,15 @@ namespace HandyMan.Controllers
         // GET: api/Client/5
         [HttpGet("{id:int}")]
         [Authorize(Policy ="Client")]
+
+        // Problem when be called from The frontend (Request Operation)
+        // Suggested Solution -> New GetClientForRequest Function with Handyman Authorization  
+        // must have Handyman ID , (Request ID , Client ID) --> Comes from the Front 
         public async Task<ActionResult<ClientDto>> GetClient(int id, [FromHeader] string Authorization)
         {
             JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
             var x = t.Claims.ToList();
+            
 
             var c = x[0];
             if (x[0].Value != id.ToString())
