@@ -30,6 +30,8 @@ namespace HandyMan.Dtos
 
         public int Region_ID { get; set; }
 
+        // public int Region_Name { get; set; }
+
         public virtual ICollection<RequestDto>? Requests { get; set; }
 
         [Range(-99, 99)]

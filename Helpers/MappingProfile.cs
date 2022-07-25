@@ -16,6 +16,10 @@ namespace HandyMan.Helpers
             CreateMap<Request, RequestDto>();
 
             CreateMap<RequestDto, Request>();
+
+            CreateMap<Payment, PaymentDto>();
+
+            CreateMap<PaymentDto, Payment>();
         }
     }
 }
