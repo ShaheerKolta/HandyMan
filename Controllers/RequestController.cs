@@ -10,6 +10,7 @@ using HandyMan.Dtos;
 using HandyMan.Interfaces;
 using HandyMan.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace HandyMan.Controllers
 {
@@ -25,6 +26,9 @@ namespace HandyMan.Controllers
             _requestRepository = requestRepository;
             _mapper = mapper;
         }
+
+
+                             //General 
 
         // GET: api/Request
         [HttpGet]
@@ -49,9 +53,13 @@ namespace HandyMan.Controllers
 
         // GET: api/Request/5
         [HttpGet("{id:int}")]
-        [Authorize(Policy = "Admin")]
-        public async Task<ActionResult<RequestDto>> GetRequest(int id)
+        [Authorize(Policy = "Request")]
+        public async Task<ActionResult<RequestDto>> GetRequest(int id, [FromHeader] string Authorization)
         {
+            JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
+            var x = t.Claims.ToList();
+
+            
             try
             {
                 var request = await _requestRepository.GetRequestByIdAsync(id);
@@ -59,7 +67,34 @@ namespace HandyMan.Controllers
                 {
                     return NotFound(new { message = "Request Is Not Found!" });
                 }
-                return _mapper.Map<RequestDto>(request);
+                if (x[2].Value == "Client" && x[0].Value == request.Client_ID.ToString())
+                {
+                    if (request.Request_Status == 2 && request.Request_Date < DateTime.Now)
+                    {
+                        var requestToReturn = _mapper.Map<RequestDto>(request);
+                        var handyman =await _requestRepository.GetHandymanFromRequestByIdAsync(request.Handyman_SSN);
+                        return Ok(new { request = requestToReturn, handymanPhone = handyman.Handyman_Mobile });
+                    }
+                    
+                    return _mapper.Map<RequestDto>(request);
+                }
+
+
+                if (x[2].Value == "Handyman" && x[0].Value == request.Handyman_SSN.ToString())
+                {
+                    if (request.Request_Status == 2 && request.Request_Date<DateTime.Now)
+                    {
+                        var requestToReturn = _mapper.Map<RequestDto>(request);
+                        var client = await _requestRepository.GetClientFromRequestByIdAsync(request.Client_ID);
+                        return Ok(new { request = requestToReturn, clientPhone = client.Client_Mobile, clientAdress = client.Client_Address }); ;
+                    }
+
+                    return _mapper.Map<RequestDto>(request);
+                }
+                if (x[2].Value == "Admin")
+                    return _mapper.Map<RequestDto>(request);
+                else
+                    return Unauthorized();
             }
             catch
             {
@@ -67,9 +102,11 @@ namespace HandyMan.Controllers
             }
         }
 
+                        //Client Functions
 
         [HttpGet("client/{id}")]
-        [Authorize(Policy ="Client")]
+        //[Authorize(Policy ="Client")]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<RequestDto>>> GetRequestsByClientId(int id)
         {
             try
@@ -85,9 +122,13 @@ namespace HandyMan.Controllers
         }
 
 
+
+                    //Handyman Functions
+
+
         [HttpGet("handyman/{handymanSsn}")]
         [Authorize(Policy = "Handyman")]
-        //function to get all incoming requests of a handyman
+        //function to get all requests of a handyman
         public async Task<ActionResult<IEnumerable<RequestDto>>> GetRequestsByHandymanSsn(int handymanSsn)
         {
             try
@@ -101,6 +142,84 @@ namespace HandyMan.Controllers
                 return NotFound(new { message = "Empty!" });
             }
         }
+
+
+        [HttpGet("handyman/pending/{handymanSsn}")]
+        [Authorize(Policy = "Handyman")]
+        //function to get all Pending requests of a handyman
+        public async Task<ActionResult<IEnumerable<RequestDto>>> GetActiveRequestsByHandymanSsn(int handymanSsn)
+        {
+            try
+            {
+                var requests = await _requestRepository.GetActiveRequestsByHandymanSsnAsync(handymanSsn);
+                var requestsToReturn = _mapper.Map<IEnumerable<RequestDto>>(requests);
+                return Ok(requestsToReturn);
+            }
+            catch
+            {
+                return NotFound(new { message = "Empty!" });
+            }
+        }
+
+
+
+        [HttpGet("accept/{id}")]
+        //[Authorize(Policy ="Handyman")]
+        [AllowAnonymous]
+        public async Task<ActionResult<RequestDto>> AcceptPendingRequest(int id)
+        {
+            /*
+             * [FromHeader] string Authentication
+             * JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
+            var x = t.Claims.ToList();
+
+            var c = x[0];
+            if (x[0].Value != id.ToString())
+            {
+                return Unauthorized();
+            }*/
+
+            var request = await _requestRepository.GetRequestByIdAsync(id);
+            if (request == null)
+                return BadRequest(new {message="Request not Found !"});
+            
+            
+            //check status of request
+            if ((request.Request_Status !=1) && (request.Request_Status!=0))
+                return BadRequest(new { message = "This Request is Not Pending" });
+
+            //check if handyman reviewed last request
+            var prevRequest = await _requestRepository.GetPrevRequest(request.Handyman_SSN, 1);
+            if (prevRequest != null)
+            {
+                var mappedPrevRequest = _mapper.Map<RequestDto>(prevRequest);
+                return CreatedAtAction("GetRequest", new { id = mappedPrevRequest.Request_ID }, mappedPrevRequest);
+            }
+            request.Request_Status = 2;
+            _requestRepository.EditRequest(request);
+            try
+            {
+                await _requestRepository.SaveAllAsync();
+                
+                var clientToReturn= _mapper.Map<ClientDto>(await _requestRepository.GetClientFromRequestByIdAsync(request.Client_ID));
+                
+                return Ok(new {phone=clientToReturn.Client_Mobile , address=clientToReturn.Client_Address});
+            }
+            catch
+            {
+                return BadRequest(new {message= "Can Not Accept This Request !"});
+            }
+        }
+
+
+
+
+
+
+
+
+
+
 
         // PUT: api/Request/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -130,10 +249,10 @@ namespace HandyMan.Controllers
         // POST: api/Request
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        [Authorize(Policy = "Client")]
+        //[Authorize(Policy = "Client")]
+        [AllowAnonymous]
         public async Task<ActionResult<RequestDto>> PostRequest(RequestDto requestDto)
         {
-            
             
             if (requestDto == null)
             {
@@ -142,6 +261,22 @@ namespace HandyMan.Controllers
             if (ModelState.IsValid)
             {
                 var request = _mapper.Map<Request>(requestDto);
+                if (!await _requestRepository.CheckRequestsByClienttoHandyman(request.Client_ID, request.Handyman_SSN))
+                    return BadRequest(new {message="Request already Exists !"});
+                var prevRequest = await _requestRepository.GetPrevRequest(request.Client_ID,0);
+                if (prevRequest != null)
+                {
+                    var mappedPrevRequest = _mapper.Map<RequestDto>(prevRequest);
+                    return CreatedAtAction("GetRequest", new { id = mappedPrevRequest.Request_ID }, mappedPrevRequest);
+                }
+                //request_date is the time for handyman arrival while Request_order_date is the time when request is made
+                if(request.Request_Date < DateTime.Now.AddHours(2) && request.Request_Order_Date < DateTime.Now)
+                    return BadRequest(new { message = "Invalid Request time!" });
+                
+                
+                //check if request is from schedule or Now 
+                if (request.Request_Date.Day >= DateTime.Now.AddDays(1).Day)
+                    request.Request_Status = 0;
                 _requestRepository.CreateRequest(request);
                 try
                 {
@@ -151,7 +286,9 @@ namespace HandyMan.Controllers
                 {
                     return BadRequest(new { Error = "Can't Add This Request!" });
                 }
+
                 return CreatedAtAction("GetRequest", new { id = requestDto.Request_ID }, requestDto);
+                
             }
             else
             {

@@ -30,6 +30,11 @@ builder.Services.AddAuthorization(opt =>
     {
         p.RequireClaim("Role", "Admin");
     });
+
+    opt.AddPolicy("Request", p =>
+    {
+        p.RequireClaim("Role", "Client","Handyman","Admin");
+    });
     opt.AddPolicy("Handyman", p =>
     {
         p.RequireClaim("Role", "Handyman","Admin");

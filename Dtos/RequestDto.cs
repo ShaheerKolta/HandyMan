@@ -16,7 +16,7 @@ namespace HandyMan.Dtos
         [Required]
         public int Client_ID { get; set; }
 
-        [Range(1, 4)] 
+        [Range(0, 4)] 
         public int Request_Status { get; set; } = 1;
 
         [Required]

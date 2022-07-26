@@ -110,7 +110,7 @@ namespace HandyMan.Data
 
             modelBuilder.Entity<Request>(entity =>
             {
-                entity.Property(e => e.Request_ID).ValueGeneratedNever();
+                //entity.Property(e => e.Request_ID).ValueGeneratedNever();
 
                 entity.Property(e => e.Request_Date).HasDefaultValueSql("(getdate())");
 
