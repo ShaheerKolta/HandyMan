@@ -30,7 +30,7 @@ namespace HandyMan.Models
         public int Request_Status { get; set; } = 1;
 
         [Required]
-        [Column(TypeName = "date")]
+        [Column(TypeName = "datetime")]
         public DateTime Request_Date { get; set; }
 
         [Required]

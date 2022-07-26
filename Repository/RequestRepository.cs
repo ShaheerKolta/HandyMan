@@ -31,6 +31,22 @@ namespace HandyMan.Repository
             return await _context.Requests.Where(c => c.Handyman_SSN == handymanSsn).ToListAsync();
         }
 
+
+        public async Task<IEnumerable<Request>> GetRequestsByClientIdAsync(int id)
+        {
+            return await _context.Requests.Where(c => c.Client_ID == id).ToListAsync();
+        }
+
+        public async Task<bool> checkRequestsByClienttoHandyman(int clientid,int handymanSsn)
+        {
+            var check = await _context.Requests.Where(c => c.Client_ID == clientid&&c.Handyman_SSN==handymanSsn&&c.Request_Status==1).ToListAsync();
+            if(check==null)
+                return true;
+            return false;
+        }
+
+
+
         public async void CreateRequest(Request request)
         {
             await _context.Requests.AddAsync(request);

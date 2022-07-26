@@ -47,7 +47,7 @@ namespace HandyMan.Models
         [InverseProperty("Client")]
         public virtual ICollection<Request>? Requests { get; set; }
 
-        [NotMapped]
+        
         [Range(-99, 99)]
         public double? Balance { get; set; }
 

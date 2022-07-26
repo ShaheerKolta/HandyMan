@@ -44,6 +44,8 @@ namespace HandyMan.Models
         [Unicode(false)]
         public string Password { get; set; }
 
+        public int? Balance { get; set; }
+
         [ForeignKey("CraftID")]
         [InverseProperty("Handymen")]
         public virtual Craft Craft { get; set; }
