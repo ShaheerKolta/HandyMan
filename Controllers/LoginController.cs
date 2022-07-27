@@ -47,16 +47,6 @@ namespace HandyMan.Controllers
             
         }
 
-
-        [HttpPost("/Register/handyman")]
-        [AllowAnonymous]
-        public async Task<ActionResult<HandymanDto>> RegisterHandyman(HandymanDto handymanDto)
-        {
-            return RedirectToAction("PostHandyman", "HandymanController",handymanDto);
-
-        }
-
-
         private string GenerateToken(UserData user)
         {
             var secretKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(

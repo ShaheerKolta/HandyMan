@@ -128,7 +128,7 @@ namespace HandyMan.Controllers
 
         // POST: api/Handyman
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+        [HttpPost("/api/Register/Handyman")]
         [AllowAnonymous]
         public async Task<ActionResult<HandymanDto>> PostHandyman(HandymanDto handymandto)
         {
