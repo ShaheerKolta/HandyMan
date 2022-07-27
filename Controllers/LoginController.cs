@@ -1,4 +1,5 @@
-﻿using HandyMan.Interfaces;
+﻿using HandyMan.Dtos;
+using HandyMan.Interfaces;
 using HandyMan.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -12,12 +13,12 @@ namespace HandyMan.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthenticationController : ControllerBase
+    public class LoginController : ControllerBase
     {
         private readonly IConfiguration config;
         private readonly IHandymanRepository handymanRepository;
         private readonly IClientRepository clientRepository;
-        public AuthenticationController(IConfiguration _config, IHandymanRepository _handymanRepository, IClientRepository _clientRepository)
+        public LoginController(IConfiguration _config, IHandymanRepository _handymanRepository, IClientRepository _clientRepository)
         {
             config = _config;
             handymanRepository = _handymanRepository;
@@ -45,6 +46,16 @@ namespace HandyMan.Controllers
             }
             
         }
+
+
+        [HttpPost("/Register/handyman")]
+        [AllowAnonymous]
+        public async Task<ActionResult<HandymanDto>> RegisterHandyman(HandymanDto handymanDto)
+        {
+            return RedirectToAction("PostHandyman", "HandymanController",handymanDto);
+
+        }
+
 
         private string GenerateToken(UserData user)
         {

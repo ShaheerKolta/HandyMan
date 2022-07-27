@@ -32,7 +32,7 @@ namespace HandyMan.Controllers
         [HttpGet("All")]
         [Authorize(Policy = "Admin")]
 
-        public async Task<ActionResult<IEnumerable<Handyman>>> GetAllHandyman()
+        public async Task<ActionResult<IEnumerable<HandymanDto>>> GetAllHandyman()
         {
 
             try
@@ -51,7 +51,7 @@ namespace HandyMan.Controllers
         [HttpGet]
         [AllowAnonymous]
         
-        public async Task<ActionResult<IEnumerable<Handyman>>> GetHandyman()
+        public async Task<ActionResult<IEnumerable<HandymanDto>>> GetHandyman()
         {
 
             try
@@ -88,7 +88,7 @@ namespace HandyMan.Controllers
                 var handyman = await handymanRepository.GetHandymanByIdAsync(id);
                 if (handyman == null)
                 {
-                    return NotFound(new { message = "Client Is Not Found!" });
+                    return NotFound(new { message = "Handyman Is Not Found!" });
                 }
                 return _mapper.Map<HandymanDto>(handyman);
 
@@ -130,7 +130,7 @@ namespace HandyMan.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         [AllowAnonymous]
-        public async Task<ActionResult<Handyman>> PostHandyman(HandymanDto handymandto)
+        public async Task<ActionResult<HandymanDto>> PostHandyman(HandymanDto handymandto)
         {
             if (handymandto == null)
             {
