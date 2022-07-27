@@ -136,6 +136,7 @@ namespace HandyMan.Controllers
                 {
                     var payment = _mapper.Map<Payment>(paymentDto);
                     _paymentRepository.CreatePayment(payment);
+                    await _paymentRepository.SaveAllAsync();
                 }
                 catch
                 {

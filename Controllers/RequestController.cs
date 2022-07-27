@@ -103,8 +103,52 @@ namespace HandyMan.Controllers
                 return NotFound();
             }
         }
+        [HttpGet("cancel/{id}")]
+        //[Authorize(Policy = "Request")]
+        [AllowAnonymous]
+        public async Task<ActionResult<RequestDto>> CancelRequest(int id, [FromHeader] string Authorization)
+        {
+            JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
+            var x = t.Claims.ToList();
 
-                        //Client Functions
+
+            try
+            {
+                var request = await _requestRepository.GetRequestByIdAsync(id);
+                if (request == null)
+                {
+                    return NotFound(new { message = "Request Is Not Found!" });
+                }
+                if (x[2].Value == "Client" && x[0].Value == request.Client_ID.ToString())
+                {
+                    
+
+                    return _mapper.Map<RequestDto>(request);
+                }
+
+
+                if (x[2].Value == "Handyman" && x[0].Value == request.Handyman_SSN.ToString())
+                {
+                    
+
+                    return _mapper.Map<RequestDto>(request);
+                }
+                if (x[2].Value == "Admin")
+                {
+                    return _mapper.Map<RequestDto>(request);
+                }
+                    
+                else
+                    return Unauthorized();
+            }
+            catch
+            {
+                return NotFound();
+            }
+        }
+
+
+        //Client Functions
 
         [HttpGet("client/{id}")]
         //[Authorize(Policy ="Client")]
@@ -267,18 +311,19 @@ namespace HandyMan.Controllers
                 }
                 //request_date is the time for handyman arrival while Request_order_date is the time when request is made
                 if(request.Request_Date < DateTime.Now.AddHours(2) && request.Request_Order_Date < DateTime.Now)
-                    return BadRequest(new { message = "Invalid Request time!" });
+                    return BadRequest(new { message = "Invalid Request time!"});
                 
                 
                 //check if request is from schedule or Now 
                 if (request.Request_Date.Day >= DateTime.Now.AddDays(1).Day)
                     request.Request_Status = 0;
                 _requestRepository.CreateRequest(request);
-                
+                _requestRepository.CreatePaymentByRequestId(request);
+
                 try
                 {
                     await _requestRepository.SaveAllAsync();
-                    _requestRepository.CreatePaymentByRequestId(request.Request_ID);
+                    
                    
                 }
                 catch

@@ -47,17 +47,22 @@ namespace HandyMan.Repository
             await _context.Requests.AddAsync(request);
         }
 
-        public async void CreatePaymentByRequestId(int id)
+        public async void CreatePaymentByRequestId(Request request)
         {
-            var request = await _context.Requests.FindAsync(id);
-            Payment requestPayment = new Payment();
-            requestPayment.Request_ID=request.Request_ID;
+            var requestPayment = request.Payments.FirstOrDefault();
             var handyman = _context.Handymen.Find(request.Handyman_SSN);
             var fixedRate = handyman.Handyman_Fixed_Rate;
-            var clientBalance = _context.Clients.Find(request.Client_ID).Balance;
+            var client = _context.Clients.Find(request.Client_ID);
+            var clientBalance = client.Balance;
             requestPayment.Payment_Amount = (int)(fixedRate - clientBalance);
-            handyman.Balance+=requestPayment.Payment_Amount;
-            _context.SaveChanges();
+            if (!requestPayment.Method)
+            {
+                handyman.Balance += -(requestPayment.Payment_Amount);
+            }
+            else
+            {
+                client.Balance = 0;
+            }
         }
 
         public void EditRequest(Request request)
