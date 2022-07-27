@@ -21,12 +21,12 @@ builder.Services.AddScoped<IHandymanRepository, HandymanRepository>();
 builder.Services.AddScoped<IRequestRepository, RequestRepository>();
 builder.Services.AddScoped<IRegionRepository, RegionRepository>();
 builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
-builder.Services.AddDbContext<Handyman_DBContext>(a=>a.UseLazyLoadingProxies().UseSqlServer(builder.Configuration.GetConnectionString("db")));
+builder.Services.AddDbContext<Handyman_DBContext>(a => a.UseLazyLoadingProxies().UseSqlServer(builder.Configuration.GetConnectionString("db")));
 
 
 builder.Services.AddAuthorization(opt =>
 {
-    
+
     opt.AddPolicy("Admin", p =>
     {
         p.RequireClaim("Role", "Admin");
@@ -34,16 +34,16 @@ builder.Services.AddAuthorization(opt =>
 
     opt.AddPolicy("Request", p =>
     {
-        p.RequireClaim("Role", "Client","Handyman","Admin");
+        p.RequireClaim("Role", "Client", "Handyman", "Admin");
     });
     opt.AddPolicy("Handyman", p =>
     {
-        p.RequireClaim("Role", "Handyman","Admin");
+        p.RequireClaim("Role", "Handyman", "Admin");
     });
 
     opt.AddPolicy("Client", p =>
     {
-        p.RequireClaim("Role", "Client","Admin");
+        p.RequireClaim("Role", "Client", "Admin");
     });
     opt.FallbackPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
 });
@@ -79,5 +79,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.UseCors(x => x
+             .AllowAnyOrigin()
+             .AllowAnyMethod()
+             .AllowAnyHeader());
 
 app.Run();
