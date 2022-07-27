@@ -43,8 +43,23 @@ namespace HandyMan.Repository
 
         public async void CreateRequest(Request request)
         {
+            
             await _context.Requests.AddAsync(request);
         }
+
+        public async void CreatePaymentByRequestId(int id)
+        {
+            var request = await _context.Requests.FindAsync(id);
+            Payment requestPayment = new Payment();
+            requestPayment.Request_ID=request.Request_ID;
+            var handyman = _context.Handymen.Find(request.Handyman_SSN);
+            var fixedRate = handyman.Handyman_Fixed_Rate;
+            var clientBalance = _context.Clients.Find(request.Client_ID).Balance;
+            requestPayment.Payment_Amount = (int)(fixedRate - clientBalance);
+            handyman.Balance+=requestPayment.Payment_Amount;
+            _context.SaveChanges();
+        }
+
         public void EditRequest(Request request)
         {
             _context.Entry(request).State = EntityState.Modified;
@@ -115,6 +130,8 @@ namespace HandyMan.Repository
         {
             return await _context.Clients.FindAsync(id);
         }
+        
+        
         //get Handyman from request not to break validation of ClientController
         public async Task<Handyman> GetHandymanFromRequestByIdAsync(int id)
         {

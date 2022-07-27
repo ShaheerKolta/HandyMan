@@ -19,16 +19,18 @@ namespace HandyMan.Controllers
     public class RequestController : ControllerBase
     {
         private readonly IRequestRepository _requestRepository;
+        
         private readonly IMapper _mapper;
 
         public RequestController(IRequestRepository requestRepository, IMapper mapper)
         {
             _requestRepository = requestRepository;
             _mapper = mapper;
+            
         }
 
 
-                             //General 
+        //General 
 
         // GET: api/Request
         [HttpGet]
@@ -173,7 +175,7 @@ namespace HandyMan.Controllers
              * JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
             var x = t.Claims.ToList();
 
-            var c = x[0];
+            
             if (x[0].Value != id.ToString())
             {
                 return Unauthorized();
@@ -197,12 +199,14 @@ namespace HandyMan.Controllers
             }
             request.Request_Status = 2;
             _requestRepository.EditRequest(request);
+            
+
+
             try
             {
+                
                 await _requestRepository.SaveAllAsync();
-                
                 var clientToReturn= _mapper.Map<ClientDto>(await _requestRepository.GetClientFromRequestByIdAsync(request.Client_ID));
-                
                 return Ok(new {phone=clientToReturn.Client_Mobile , address=clientToReturn.Client_Address});
             }
             catch
@@ -270,9 +274,12 @@ namespace HandyMan.Controllers
                 if (request.Request_Date.Day >= DateTime.Now.AddDays(1).Day)
                     request.Request_Status = 0;
                 _requestRepository.CreateRequest(request);
+                
                 try
                 {
                     await _requestRepository.SaveAllAsync();
+                    _requestRepository.CreatePaymentByRequestId(request.Request_ID);
+                   
                 }
                 catch
                 {

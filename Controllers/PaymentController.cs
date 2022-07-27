@@ -123,7 +123,8 @@ namespace HandyMan.Controllers
         // POST: api/Payment
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        [Authorize(Policy ="Admin")]
+        //[Authorize(Policy ="Admin")]
+        [AllowAnonymous]
         public async Task<ActionResult<PaymentDto>> PostPayment(PaymentDto paymentDto)
         {
             

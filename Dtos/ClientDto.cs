@@ -35,7 +35,7 @@ namespace HandyMan.Dtos
         public virtual ICollection<RequestDto>? Requests { get; set; }
 
         [Range(-99, 99)]
-        public double? Balance { get; set; }
+        public int? Balance { get; set; } = 0;
 
         [Range(1, 5)]
         public double? Rating { get; set; }
