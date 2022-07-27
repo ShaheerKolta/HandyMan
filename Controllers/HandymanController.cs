@@ -29,15 +29,34 @@ namespace HandyMan.Controllers
             _mapper = mapper;
         }
 
+        [HttpGet("All")]
+        [Authorize(Policy = "Admin")]
+
+        public async Task<ActionResult<IEnumerable<Handyman>>> GetAllHandyman()
+        {
+
+            try
+            {
+                var handymen = await handymanRepository.GetHandyManAsync();
+                var res = _mapper.Map<IEnumerable<HandymanDto>>(handymen);
+                return Ok(res);
+            }
+            catch
+            {
+                return NotFound(new { message = "Empty!" });
+            }
+        }
+
         // GET: api/Handyman
         [HttpGet]
         [AllowAnonymous]
         
         public async Task<ActionResult<IEnumerable<Handyman>>> GetHandyman()
         {
+
             try
             {
-                var handymen = await handymanRepository.GetHandyManAsync();
+                var handymen = await handymanRepository.GetVerifiedHandyManAsync();
                 var res = _mapper.Map<IEnumerable<HandymanDto>>(handymen);
                 return Ok(res);
             }
@@ -59,7 +78,6 @@ namespace HandyMan.Controllers
             JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
             var x = t.Claims.ToList();
             
-            var c = x[0];
             if (x[0].Value !=id.ToString())
             {
                 return Unauthorized();

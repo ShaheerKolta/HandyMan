@@ -37,7 +37,7 @@ namespace HandyMan.Dtos
 
         public virtual Craft Craft { get; set; }
         
-        public virtual ICollection<Request>? Requests { get; set; }
+        public virtual ICollection<RequestDto>? Requests { get; set; }
         
         public virtual ICollection<Schedule>? Schedules { get; set; }
 

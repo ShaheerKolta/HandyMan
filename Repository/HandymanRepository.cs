@@ -33,6 +33,11 @@ namespace HandyMan.Repository
             return await context.Handymen.ToListAsync();
         }
 
+        public async Task<IEnumerable<Handyman>> GetVerifiedHandyManAsync()
+        {
+            return await context.Handymen.Where(a=>a.Approved==true).ToListAsync();
+        }
+
         public async Task<Handyman> GetHandymanByIdAsync(int id)
         {
             return await context.Handymen.FindAsync(id);
