@@ -34,6 +34,13 @@ namespace HandyMan.Helpers
             CreateMap<Payment, PaymentDto>();
 
             CreateMap<PaymentDto, Payment>();
+
+
+            //Region Dto
+
+            CreateMap<Region, RegionDto>();
+
+            CreateMap<RegionDto, Region>();
         }
     }
 }
