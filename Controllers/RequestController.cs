@@ -69,7 +69,7 @@ namespace HandyMan.Controllers
                 }
                 if (x[2].Value == "Client" && x[0].Value == request.Client_ID.ToString())
                 {
-                    if (request.Request_Status == 2 && request.Request_Date < DateTime.Now)
+                    if (request.Request_Status == 2 && request.Request_Date >= DateTime.Now)
                     {
                         var requestToReturn = _mapper.Map<RequestDto>(request);
                         var handyman =await _requestRepository.GetHandymanFromRequestByIdAsync(request.Handyman_SSN);
@@ -82,7 +82,7 @@ namespace HandyMan.Controllers
 
                 if (x[2].Value == "Handyman" && x[0].Value == request.Handyman_SSN.ToString())
                 {
-                    if (request.Request_Status == 2 && request.Request_Date<DateTime.Now)
+                    if (request.Request_Status == 2 && request.Request_Date >= DateTime.Now)
                     {
                         var requestToReturn = _mapper.Map<RequestDto>(request);
                         var client = await _requestRepository.GetClientFromRequestByIdAsync(request.Client_ID);
@@ -238,6 +238,7 @@ namespace HandyMan.Controllers
             {
                 await _requestRepository.SaveAllAsync();
             }
+
             catch
             {
                 return BadRequest();
