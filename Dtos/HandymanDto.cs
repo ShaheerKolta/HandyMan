@@ -36,7 +36,7 @@ namespace HandyMan.Dtos
         [Required]
         public string Password { get; set; }
 
-        public virtual ICollection<RequestDto>? Requests { get; set; }
+        //public virtual ICollection<RequestDto>? Requests { get; set; }
         
         public virtual ICollection<Schedule>? Schedules { get; set; }
 

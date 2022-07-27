@@ -98,7 +98,7 @@ namespace HandyMan.Data
                 entity.HasOne(d => d.Request)
                     .WithMany(p => p.Payments)
                     .HasForeignKey(d => d.Request_ID)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_Payment_Request");
             });
 

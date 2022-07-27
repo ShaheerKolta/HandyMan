@@ -7,6 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HandyMan.Data;
 using HandyMan.Models;
+using HandyMan.Dtos;
+using AutoMapper;
+using HandyMan.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HandyMan.Controllers
 {
@@ -14,68 +18,103 @@ namespace HandyMan.Controllers
     [ApiController]
     public class PaymentController : ControllerBase
     {
-        private readonly Handyman_DBContext _context;
+        private readonly IPaymentRepository _paymentRepository;
+        private readonly IMapper _mapper;
 
-        public PaymentController(Handyman_DBContext context)
+        public PaymentController(IPaymentRepository paymentRepository, IMapper mapper)
         {
-            _context = context;
+            _paymentRepository = paymentRepository;
+            _mapper = mapper;
         }
 
         // GET: api/Payment
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Payment>>> GetPayments()
+        [Authorize(Policy = "Admin")]
+        public async Task<ActionResult<IEnumerable<PaymentDto>>> GetPayments()
         {
-          if (_context.Payments == null)
-          {
-              return NotFound();
-          }
-            return await _context.Payments.ToListAsync();
+            try
+            {
+                var payments = await _paymentRepository.GetPaymentAsync();
+                var paymentsToReturn = _mapper.Map<IEnumerable<PaymentDto>>(payments);
+                return Ok(paymentsToReturn);
+            }
+            catch
+            {
+                return NotFound(new { message = "Empty!" });
+            }
+            
+             
         }
+
+
 
         // GET: api/Payment/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Payment>> GetPayment(int id)
+        [Authorize(Policy ="Request")]
+        public async Task<ActionResult<PaymentDto>> GetPayment(int id)
         {
-          if (_context.Payments == null)
-          {
-              return NotFound();
-          }
-            var payment = await _context.Payments.FindAsync(id);
+            try
+            {
+                var payment = await _paymentRepository.GetPaymentByIdAsync(id);
 
-            if (payment == null)
+                if (payment == null)
+                {
+                    return NotFound();
+                }
+
+                var paymentToReturn = _mapper.Map<PaymentDto>(payment);
+                return paymentToReturn;
+            }
+            catch
+            {
+                return NotFound();
+            }
+            
+        }
+
+        [HttpGet("/Request/{id}")]
+        [Authorize(Policy = "Request")]
+        public async Task<ActionResult<PaymentDto>> GetPaymentByRequestId(int id)
+        {
+            try
+            {
+                var payment = await _paymentRepository.GetPaymentByRequestIdAsync(id);
+
+                if (payment == null)
+                {
+                    return NotFound();
+                }
+
+                var paymentToReturn = _mapper.Map<PaymentDto>(payment);
+                return paymentToReturn;
+            }
+            catch
             {
                 return NotFound();
             }
 
-            return payment;
         }
 
         // PUT: api/Payment/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPayment(int id, Payment payment)
+        [Authorize(Policy ="Admin")]
+        public async Task<IActionResult> EditPayment(int id, PaymentDto paymentDto)
         {
-            if (id != payment.Payment_ID)
+            if (id != paymentDto.Payment_ID)
             {
                 return BadRequest();
             }
-
-            _context.Entry(payment).State = EntityState.Modified;
+            var payment = _mapper.Map<Payment>(paymentDto);
+            _paymentRepository.EditPayment(payment);
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _paymentRepository.SaveAllAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!PaymentExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest();
             }
 
             return NoContent();
@@ -84,41 +123,59 @@ namespace HandyMan.Controllers
         // POST: api/Payment
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Payment>> PostPayment(Payment payment)
+        [Authorize(Policy ="Admin")]
+        public async Task<ActionResult<PaymentDto>> PostPayment(PaymentDto paymentDto)
         {
-          if (_context.Payments == null)
-          {
-              return Problem("Entity set 'Handyman_DBContext.Payments'  is null.");
-          }
-            _context.Payments.Add(payment);
-            await _context.SaveChangesAsync();
+            
+            if (paymentDto == null)
+                return NotFound(new { message = "Payment Is Not Found!" });
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var payment = _mapper.Map<Payment>(paymentDto);
+                    _paymentRepository.CreatePayment(payment);
+                }
+                catch
+                {
+                    return BadRequest(new { Error = "Can't Add This Payment!" });
+                }
+                return CreatedAtAction("GetPayment", new { id = paymentDto.Payment_ID }, paymentDto);
+            }
+            else return BadRequest(ModelState);
 
-            return CreatedAtAction("GetPayment", new { id = payment.Payment_ID }, payment);
         }
 
         // DELETE: api/Payment/5
         [HttpDelete("{id}")]
+        [Authorize(Policy ="Admin")]
         public async Task<IActionResult> DeletePayment(int id)
         {
-            if (_context.Payments == null)
+            try
             {
-                return NotFound();
+                _paymentRepository.DeletePaymentById(id);
+                await _paymentRepository.SaveAllAsync();
             }
-            var payment = await _context.Payments.FindAsync(id);
-            if (payment == null)
+            catch
             {
-                return NotFound();
+                return NotFound(new { message = "Payment Is Not Found!" });
             }
-
-            _context.Payments.Remove(payment);
-            await _context.SaveChangesAsync();
-
             return NoContent();
         }
-
-        private bool PaymentExists(int id)
+        [HttpDelete("Request/{id}")]
+        [Authorize(Policy ="Admin")]
+        public async Task<IActionResult> DeletePaymentByRequestId(int id)
         {
-            return (_context.Payments?.Any(e => e.Payment_ID == id)).GetValueOrDefault();
+            try
+            {
+                _paymentRepository.DeletePaymentByRequestId(id);
+                await _paymentRepository.SaveAllAsync();
+            }
+            catch
+            {
+                return NotFound(new { message = "Payment Is Not Found!" });
+            }
+            return NoContent();
         }
     }
 }
