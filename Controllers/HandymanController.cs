@@ -142,8 +142,9 @@ namespace HandyMan.Controllers
             {
                 await handymanRepository.SaveAllAsync();
             }
-            catch (DbUpdateException)
+            catch 
             {
+                /*
                 if (handymanRepository.GetHandymanByIdAsync(handyman.Handyman_SSN) != null)
                 {
                     return Conflict();
@@ -152,6 +153,8 @@ namespace HandyMan.Controllers
                 {
                     return BadRequest();
                 }
+                */
+                return BadRequest(new { message= "Can't Save!"});
             }
 
             return CreatedAtAction("GetHandyman", new { id = handymandto.Handyman_SSN }, handymandto);

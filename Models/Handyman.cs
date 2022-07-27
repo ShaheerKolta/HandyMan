@@ -48,7 +48,7 @@ namespace HandyMan.Models
 
         [ForeignKey("CraftID")]
         [InverseProperty("Handymen")]
-        public virtual Craft Craft { get; set; }
+        public virtual Craft? Craft { get; set; }
         [InverseProperty("Handyman_SSNNavigation")]
         public virtual ICollection<Request>? Requests { get; set; }
         [InverseProperty("Handy_SSNNavigation")]
