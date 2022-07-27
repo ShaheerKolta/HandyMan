@@ -10,6 +10,7 @@ using HandyMan.Models;
 using AutoMapper;
 using HandyMan.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using HandyMan.Dtos;
 
 namespace HandyMan.Controllers
 {
@@ -19,23 +20,25 @@ namespace HandyMan.Controllers
     public class CraftController : ControllerBase
     {
         private readonly ICraftRepository _craftRepository;
-  
+        private readonly IMapper _mapper;
 
-        public CraftController(ICraftRepository craftRepository)
+
+        public CraftController(ICraftRepository craftRepository, IMapper mapper)
         {
             _craftRepository = craftRepository;
-        
+            _mapper = mapper;
         }
 
         // GET: api/Craft
         [HttpGet]
-    
-        public async Task<ActionResult<IEnumerable<Craft>>> Get()
+        [HttpGet("FindCrafts")]
+
+        public async Task<ActionResult<IEnumerable<CraftDto>>> GetCrafts()
         {
             try
             {
                 var crafts = await _craftRepository.GetCraftAsync();
-             
+
                 return Ok(crafts);
             }
             catch
@@ -45,17 +48,20 @@ namespace HandyMan.Controllers
         }
 
         [HttpGet("{id:int}")]
-      
-        public async Task<ActionResult<Craft>> Get(int id)
+
+
+        public async Task<ActionResult<CraftDto>> GetCraftbyId(int id)
         {
             try
             {
                 var craft = await _craftRepository.GetCraftByIdAsync(id);
+                var craftToReturn = _mapper.Map<IEnumerable<CraftDto>>(craft);
+
                 if (craft == null)
                 {
                     return NotFound(new { message = "Craft Is Not Found!" });
                 }
-                return craft;
+                return Ok(craftToReturn);
             }
             catch
             {
@@ -67,14 +73,15 @@ namespace HandyMan.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> Put(int id, Craft craft)
+        public async Task<IActionResult> EditCraft(int id, CraftDto craftdto)
         {
-            if (id != craft.Craft_ID)
+            if (id != craftdto.Craft_ID)
             {
                 return NotFound(new { message = "Craft Is Not Found!" });
             }
 
-           
+            var craft = _mapper.Map<Craft>(craftdto);
+
             _craftRepository.EditCraft(craft);
             try
             {
@@ -91,19 +98,22 @@ namespace HandyMan.Controllers
         // POST: api/Craft
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        [Authorize(Policy="Admin")]
-        public async Task<ActionResult<Craft>> Post(Craft craft)
+        [Authorize(Policy = "Admin")]
+        public async Task<ActionResult<CraftDto>> PostCraft(CraftDto craftdto)
         {
-            if (craft == null)
+            if (craftdto == null)
             {
                 return NotFound(new { message = "Craft Is Not Found!" });
             }
             if (ModelState.IsValid)
             {
-              
+
+                var craft = _mapper.Map<Craft>(craftdto);
                 _craftRepository.CreateCraft(craft);
                 try
                 {
+
+
                     await _craftRepository.SaveAllAsync();
                 }
                 catch
@@ -122,7 +132,7 @@ namespace HandyMan.Controllers
         // DELETE: api/Craft/5
         [HttpDelete("{id}")]
         [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteCraft(int id)
         {
             try
             {
