@@ -18,11 +18,12 @@ namespace HandyMan.Dtos
         [StringLength(11)]
         public string Handyman_Mobile { get; set; }
 
-        
+        public int CraftID { get; set; }
+
         [Required]
         public int Handyman_Fixed_Rate { get; set; }
-        public bool? Approved { get; set; }
-        public bool? Open_For_Work { get; set; }
+        public bool? Approved { get; set; } = false;
+        public bool? Open_For_Work { get; set; } = false;
         [Unicode(false)]
         public string? Handyman_Photo { get; set; }
         [StringLength(50)]
@@ -35,8 +36,6 @@ namespace HandyMan.Dtos
         [Required]
         public string Password { get; set; }
 
-        public virtual Craft Craft { get; set; }
-        
         public virtual ICollection<RequestDto>? Requests { get; set; }
         
         public virtual ICollection<Schedule>? Schedules { get; set; }
