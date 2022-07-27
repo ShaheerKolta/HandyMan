@@ -53,7 +53,6 @@ namespace HandyMan.Controllers
         public async Task<ActionResult<HandymanDto>> RegisterHandyman(HandymanDto handymanDto)
         {
             return RedirectToAction("PostHandyman", "HandymanController",handymanDto);
-
         }
 
 
