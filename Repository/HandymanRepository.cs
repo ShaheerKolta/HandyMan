@@ -43,6 +43,24 @@ namespace HandyMan.Repository
             return await context.Handymen.FindAsync(id);
         }
 
+        public void CalculateHandymanRate(Handyman handyman)
+        {
+            var requests = handyman.Requests;
+            if (requests != null)
+            {
+                double sum = 0, count = 0;
+                foreach (var req in requests)
+                {
+                    if (req.Handy_Rate != null)
+                    {
+                        sum += (int)req.Handy_Rate;
+                        count++;
+                    }
+                }
+                handyman.Rating = sum / count;
+            }
+        }
+
         public async Task<bool> SaveAllAsync()
         {
             return await context.SaveChangesAsync() > 0;

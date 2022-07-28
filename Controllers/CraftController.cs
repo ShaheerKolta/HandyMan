@@ -38,8 +38,8 @@ namespace HandyMan.Controllers
             try
             {
                 var crafts = await _craftRepository.GetCraftAsync();
-
-                return Ok(crafts);
+                
+                return Ok(_mapper.Map<IEnumerable<CraftDto>>(crafts));
             }
             catch
             {

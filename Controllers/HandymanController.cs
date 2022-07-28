@@ -51,7 +51,7 @@ namespace HandyMan.Controllers
         [HttpGet]
         [AllowAnonymous]
         
-        public async Task<ActionResult<IEnumerable<HandymanDto>>> GetHandyman()
+        public async Task<ActionResult<IEnumerable<HandymanDto>>> GetHandyman()//Verified only
         {
 
             try
@@ -86,6 +86,7 @@ namespace HandyMan.Controllers
             {
                 
                 var handyman = await handymanRepository.GetHandymanByIdAsync(id);
+                handymanRepository.CalculateHandymanRate(handyman);
                 if (handyman == null)
                 {
                     return NotFound(new { message = "Handyman Is Not Found!" });

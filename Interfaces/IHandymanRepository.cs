@@ -7,6 +7,7 @@ namespace HandyMan.Interfaces
         Task<IEnumerable<Handyman>> GetHandyManAsync();
         Task<IEnumerable<Handyman>> GetVerifiedHandyManAsync();
         Task<Handyman> GetHandymanByIdAsync(int id);
+        void CalculateHandymanRate(Handyman handyman);
         void CreateHandyman(Handyman handyman);
         void EditHandyman(Handyman handyman);
         void DeleteHandymanById(int id);

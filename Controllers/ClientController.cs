@@ -88,6 +88,7 @@ namespace HandyMan.Controllers
                 {
                     return NotFound(new { message = "Client Is Not Found!" });
                 }
+                _clientRepository.CalculateClientRate(client);
                 return _mapper.Map<ClientDto>(client);
             }
             catch

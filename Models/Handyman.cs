@@ -46,6 +46,10 @@ namespace HandyMan.Models
 
         public int? Balance { get; set; } = 0;
 
+        [NotMapped]
+        [Range(1, 5)]
+        public double? Rating { get; set; }
+
         [ForeignKey("CraftID")]
         [InverseProperty("Handymen")]
         public virtual Craft? Craft { get; set; }
