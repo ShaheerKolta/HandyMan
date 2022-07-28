@@ -12,6 +12,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using HandyMan.Dtos;
 using System.IdentityModel.Tokens.Jwt;
+using Newtonsoft.Json;
 
 namespace HandyMan.Controllers
 {
