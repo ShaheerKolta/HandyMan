@@ -81,9 +81,14 @@ namespace HandyMan.Controllers
             {
                 return Problem("Schedule is Empty");
             }
-            if(scheduleDto.Schedule_Date < DateTime.Now.AddDays(1))
+            if(scheduleDto.Schedule_Date < DateTime.Now.AddDays(1) || scheduleDto.Schedule_Date > DateTime.Now.AddDays(2))
             {
                 return BadRequest(new { message = "Can't add this schedule" });
+            }
+
+            if (scheduleDto.Time_From > scheduleDto.Time_To)
+            {
+                return BadRequest(new { message = "Time From Must be Before Time To !!" });
             }
             var schedule = _mapper.Map<Schedule>(scheduleDto);
             _scheduleRepository.CreateSchedule(schedule);
@@ -100,10 +105,17 @@ namespace HandyMan.Controllers
         }
 
         // DELETE: api/Schedule/5
-        [HttpDelete("{id}")]
+        [HttpDelete]
         [Authorize(Policy ="Handyman")]
-        public async Task<IActionResult> DeleteSchedule(ScheduleDto scheduleDto )
+        public async Task<IActionResult> DeleteSchedule(ScheduleDto scheduleDto , [FromHeader] string Authorization)
         {
+            JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
+            var x = t.Claims.ToList();
+
+            if (x[0].Value != scheduleDto.Handy_SSN.ToString())
+            {
+                return Unauthorized();
+            }
             if (scheduleDto == null)
             {
                 return BadRequest(new { message="Sent Schedule is Null !!"});
@@ -120,7 +132,7 @@ namespace HandyMan.Controllers
             }
             
 
-            return NoContent();
+            return Ok(new {message ="Schedule Deleted Sucessfully"});
         }
     }
 }
