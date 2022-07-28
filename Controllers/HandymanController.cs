@@ -47,6 +47,28 @@ namespace HandyMan.Controllers
             }
         }
 
+        // GET: api/Handyman/Approve/5
+        [HttpGet("Approve/{id}")]
+        [Authorize(Policy = "Admin")]
+        public async Task<ActionResult<HandymanDto>> ApproveHandyman(int id)
+        {
+            var handyman = await handymanRepository.GetHandymanByIdAsync(id);
+            if(handyman == null)
+                return BadRequest(new { message = "Not Found!" });
+            var approved = handymanRepository.ApproveHandymanById(handyman);
+            if (!approved)
+                return BadRequest(new {message = "No Documents Found!" });
+            try
+            {
+                await handymanRepository.SaveAllAsync();
+                return Ok(new { message = "Approved" });
+            }
+            catch
+            {
+                return BadRequest(new { message = "Can't Save!" });
+            }
+        }
+
         // GET: api/Handyman
         [HttpGet]
         [AllowAnonymous]

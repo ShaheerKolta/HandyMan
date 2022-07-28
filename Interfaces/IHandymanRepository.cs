@@ -11,6 +11,7 @@ namespace HandyMan.Interfaces
         void CreateHandyman(Handyman handyman);
         void EditHandyman(Handyman handyman);
         void DeleteHandymanById(int id);
+        bool ApproveHandymanById(Handyman handyman);
         Task<bool> SaveAllAsync();
 
     }
