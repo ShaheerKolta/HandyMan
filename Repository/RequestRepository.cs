@@ -102,6 +102,14 @@ namespace HandyMan.Repository
             _context.SaveChanges();
         }
 
+        public async Task<bool> CheckRequestTimeDuplicate(Request request)
+        {
+            var req = await _context.Requests.Where(a => a.Handyman_SSN == request.Handyman_SSN && a.Request_Date == request.Request_Date && a.Request_Status==2).FirstOrDefaultAsync();
+            if (req != null)
+                return false;
+            return true;
+        }
+
         public void EditRequest(Request request)
         {
             _context.Entry(request).State = EntityState.Modified;

@@ -241,11 +241,13 @@ namespace HandyMan.Controllers
                 var mappedPrevRequest = _mapper.Map<RequestDto>(prevRequest);
                 return CreatedAtAction("GetRequest", new { id = mappedPrevRequest.Request_ID }, mappedPrevRequest);
             }
+            if (! await _requestRepository.CheckRequestTimeDuplicate(request))
+            {
+                return BadRequest(new {message ="There is another Request with same Time Accepted!"});
+            }
             request.Request_Status = 2;
             _requestRepository.EditRequest(request);
             
-
-
             try
             {
                 

@@ -12,6 +12,7 @@ namespace HandyMan.Interfaces
         Task<Client> GetClientFromRequestByIdAsync(int id);
         Task<Handyman> GetHandymanFromRequestByIdAsync(int id);
         Task<bool> CheckRequestsByClienttoHandyman(int clientid, int handymanSsn);
+        Task<bool> CheckRequestTimeDuplicate(Request request);
         Task<Request> GetPrevRequest(int id, int role);
         void CreateRequest(Request request);
         void CreatePaymentByRequestId(Request request);
