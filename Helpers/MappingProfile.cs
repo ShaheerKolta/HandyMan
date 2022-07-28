@@ -46,6 +46,11 @@ namespace HandyMan.Helpers
             CreateMap<CraftDto, Craft>();
 
             CreateMap<Craft, CraftDto>();
+
+            //Schedule DTO
+            CreateMap<ScheduleDto, Schedule>();
+
+            CreateMap<Schedule, ScheduleDto>();
         }
     }
 }

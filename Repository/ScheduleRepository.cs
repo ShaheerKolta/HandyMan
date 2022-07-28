@@ -14,39 +14,31 @@ namespace HandyMan.Repository
             this.context = context;
         }
 
-        public async void CreateSchedule(Schedule schedule)
-        {
-            await context.Schedules.AddAsync(schedule);
-        }
-
-        
-
-        public void DeleteScheduleById(int id, DateTime date, TimeSpan time)
-        {
-            Schedule schedule = context.Schedules.FirstOrDefault(a => a.Handy_SSN == id && a.Schedule_Date.Equals(date) && a.Time_From.Equals(time));
-            context.Remove(schedule);
-        }
-
-        public void EditSchedule(Schedule schedule)
-        {
-            context.Entry(schedule).State = EntityState.Modified;
-        }
-
-        public async Task<IEnumerable<Schedule>> GetScheduleAsync()
+        public async Task<IEnumerable<Schedule>> GetScheduleAsync() //For Admin Usage
         {
             return await context.Schedules.ToListAsync();
         }
 
-        public async Task<Schedule> GetScheduleByHandymanSsnAsync(int id, DateTime date, TimeSpan time)
+        public async Task<IEnumerable<Schedule>> GetSchedulesByHandymanSsnAsync(int id)
         {
-            Schedule schedule = context.Schedules.FirstOrDefault(a => a.Handy_SSN == id && a.Schedule_Date.Equals(date) && a.Time_From.Equals(time));
-            return schedule;
+            var schedules = await context.Schedules.Where(a => a.Handy_SSN == id && a.Schedule_Date.Day>=DateTime.Now.Day).ToListAsync();
+            return schedules;
         }
 
-
-        public Task<bool> SaveAllAsync()
+        public async void CreateSchedule(Schedule schedule)
         {
-            throw new NotImplementedException();
+            await context.Schedules.AddAsync(schedule);
+            
+        }
+        
+        public void DeleteSchedule(Schedule schedule)
+        {
+            context.Remove(schedule);
+        }
+
+        public async Task<bool> SaveAllAsync()
+        {
+            return await context.SaveChangesAsync() > 0;
         }
     }
 }
