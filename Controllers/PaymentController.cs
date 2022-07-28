@@ -164,6 +164,7 @@ namespace HandyMan.Controllers
             }
             return NoContent();
         }
+
         [HttpDelete("Request/{id}")]
         [Authorize(Policy ="Admin")]
         public async Task<IActionResult> DeletePaymentByRequestId(int id)

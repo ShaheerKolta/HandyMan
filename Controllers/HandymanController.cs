@@ -50,7 +50,6 @@ namespace HandyMan.Controllers
         // GET: api/Handyman
         [HttpGet]
         [AllowAnonymous]
-        
         public async Task<ActionResult<IEnumerable<HandymanDto>>> GetHandyman()//Verified only
         {
 
@@ -145,16 +144,6 @@ namespace HandyMan.Controllers
             }
             catch 
             {
-                /*
-                if (handymanRepository.GetHandymanByIdAsync(handyman.Handyman_SSN) != null)
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    return BadRequest();
-                }
-                */
                 return BadRequest(new { message= "Can't Save!"});
             }
 
