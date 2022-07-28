@@ -61,6 +61,17 @@ namespace HandyMan.Repository
             }
         }
 
+        public bool ApproveHandymanById(Handyman handyman)
+        {
+            if (handyman.Handyman_Photo != null && handyman.Handyman_ID_Image != null &&
+                handyman.Handyman_Criminal_Record != null)
+            {
+                handyman.Approved = true;
+                return true;
+            }
+            return false;
+        }
+
         public async Task<bool> SaveAllAsync()
         {
             return await context.SaveChangesAsync() > 0;
