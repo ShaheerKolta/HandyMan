@@ -104,8 +104,7 @@ namespace HandyMan.Controllers
             }
         }
         [HttpGet("cancel/{id}")]
-        //[Authorize(Policy = "Request")]
-        [AllowAnonymous]
+        [Authorize(Policy = "Request")]
         public async Task<ActionResult<RequestDto>> CancelRequest(int id, [FromHeader] string Authorization)
         {
             JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
@@ -119,23 +118,24 @@ namespace HandyMan.Controllers
                 {
                     return NotFound(new { message = "Request Is Not Found!" });
                 }
+                if (request.Request_Status == 3 || request.Request_Status == 4)
+                    return BadRequest(new { Message = "Request already canceled !!" });
                 if (x[2].Value == "Client" && x[0].Value == request.Client_ID.ToString())
                 {
-                    
-
-                    return _mapper.Map<RequestDto>(request);
+                    _requestRepository.CancelByRequestId(id,0);
+                    return Ok(new { message = "Canceled Successfully by Client" });
                 }
 
 
                 if (x[2].Value == "Handyman" && x[0].Value == request.Handyman_SSN.ToString())
                 {
-                    
-
-                    return _mapper.Map<RequestDto>(request);
+                    _requestRepository.CancelByRequestId(id,1);
+                    return Ok(new { message = "Canceled Successfully by Handyman"});
                 }
                 if (x[2].Value == "Admin")
                 {
-                    return _mapper.Map<RequestDto>(request);
+                    _requestRepository.CancelByRequestId(id, 2);
+                    return Ok(new { message = "Canceled Successfully by Admin" });
                 }
                     
                 else

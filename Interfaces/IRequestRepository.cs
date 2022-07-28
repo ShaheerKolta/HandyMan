@@ -15,6 +15,7 @@ namespace HandyMan.Interfaces
         Task<Request> GetPrevRequest(int id, int role);
         void CreateRequest(Request request);
         void CreatePaymentByRequestId(Request request);
+        void CancelByRequestId(int id , int role);
         void EditRequest(Request request);
         void DeleteRequestById(int id);
         Task<bool> SaveAllAsync();

@@ -68,7 +68,7 @@ namespace HandyMan.Controllers
                 config.GetValue<string>("Authentication:Audience"),
                 claims,
                 DateTime.Now,
-                DateTime.Now.AddHours(1),
+                DateTime.Now.AddDays(1),
                 signingCredentials
                 );
 

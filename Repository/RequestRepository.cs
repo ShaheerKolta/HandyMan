@@ -65,6 +65,43 @@ namespace HandyMan.Repository
             }
         }
 
+        public void CancelByRequestId(int id, int role)//role =0 client , role==1 handyman , role==2 admin
+        {
+            var request = _context.Requests.Find(id);
+            var handyman = _context.Handymen.Find(request.Handyman_SSN);
+            var client = _context.Clients.Find(request.Client_ID);
+            var payment = request.Payments.FirstOrDefault();
+            request.Request_Status = role == 1 ? 4 : 3; //if canceled by client then status is 3 , by handyman is 4
+            //in case of cash
+            if (!payment.Method)
+            {
+                handyman.Balance+=payment.Payment_Amount;
+                request.Payments.Remove(payment);
+            }
+            //in case of credit
+            else
+            {
+                var difference = payment.Payment_Amount - handyman.Handyman_Fixed_Rate;
+                client.Balance += difference>0 ? 0 : difference;
+                request.Payments.Remove(payment);
+            }
+            //in case of penalty
+            if (request.Request_Date.AddHours(-1) <= DateTime.Now && role!=2)
+            {
+                if (role == 0)
+                {
+                    client.Balance -= (int)(handyman.Handyman_Fixed_Rate * 0.1);
+                    handyman.Balance += (int)(handyman.Handyman_Fixed_Rate * 0.1);
+
+                }
+                else if (role == 1)
+                {
+                    handyman.Balance -= (int)(handyman.Handyman_Fixed_Rate * 0.1);
+                }
+            }
+            _context.SaveChanges();
+        }
+
         public void EditRequest(Request request)
         {
             _context.Entry(request).State = EntityState.Modified;
