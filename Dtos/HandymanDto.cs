@@ -42,7 +42,7 @@ namespace HandyMan.Dtos
         public double? Rating { get; set; }
         public virtual ICollection<RequestDto>? Requests { get; set; }
 
-        //public virtual ICollection<Schedule>? Schedules { get; set; }
+        public virtual ICollection<ScheduleDto>? Schedules { get; set; }
 
         
         public virtual ICollection<RegionDto>? Regions { get; set; }

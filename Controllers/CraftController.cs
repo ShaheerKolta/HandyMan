@@ -30,7 +30,6 @@ namespace HandyMan.Controllers
         }
 
         // GET: api/Craft
-        [HttpGet]
         [HttpGet("FindCrafts")]
 
         public async Task<ActionResult<IEnumerable<CraftDto>>> GetCrafts()
