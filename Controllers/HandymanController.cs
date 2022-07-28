@@ -47,6 +47,24 @@ namespace HandyMan.Controllers
             }
         }
 
+        [HttpGet("Craft/{id}")]
+        [AllowAnonymous]
+
+        public async Task<ActionResult<IEnumerable<HandymanDto>>> GetHandymenByCraftId(int id)
+        {
+
+            try
+            {
+                var handymen = await handymanRepository.GetHandymenByCraftId(id);
+                var res = _mapper.Map<IEnumerable<HandymanDto>>(handymen);
+                return Ok(res);
+            }
+            catch
+            {
+                return NotFound(new { message = "Empty!" });
+            }
+        }
+
         // GET: api/Handyman/Approve/5
         [HttpGet("Approve/{id}")]
         [Authorize(Policy = "Admin")]

@@ -12,6 +12,7 @@ namespace HandyMan.Interfaces
         void EditHandyman(Handyman handyman);
         void DeleteHandymanById(int id);
         bool ApproveHandymanById(Handyman handyman);
+        Task<IEnumerable<Handyman>> GetHandymenByCraftId(int craftId);
         Task<bool> SaveAllAsync();
 
     }
