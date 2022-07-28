@@ -21,7 +21,12 @@ namespace HandyMan.Repository
 
         public async Task<Client> GetClientByIdAsync(int id)
         {
-            return await _context.Clients.FindAsync(id);
+            var client = await _context.Clients.FindAsync(id);
+            var request = client.Requests.Where(a => a.Request_Status == 2).OrderByDescending(a => a.Request_Date).FirstOrDefault();
+            if (request != null && request.Request_Date < DateTime.Now)
+                client.Balance = 0;
+            await _context.SaveChangesAsync();
+            return client;
         }
 
         public async Task<Client> GetClientByEmail(string email)

@@ -27,17 +27,17 @@ namespace HandyMan.Repository
 
         public async Task<Request> GetPrevRequest(int id, int role)
         {
+            Request request;
             //if role == 0 role is client if role ==1 then role is Handyman
             if (role == 0)
             {
-                var request = await _context.Requests.Where(c => c.Client_ID == id && c.Request_Status == 2 && c.Handy_Rate==null && c.Request_Order_Date < DateTime.Now && c.Request_Date > DateTime.Now.AddDays(1)).OrderByDescending(a=>a.Request_Order_Date).FirstOrDefaultAsync();
-                return request;
+                 request = await _context.Requests.Where(c => c.Client_ID == id && c.Request_Status == 2 && c.Handy_Rate==null && c.Request_Order_Date < DateTime.Now && c.Request_Date > DateTime.Now.AddDays(1)).OrderByDescending(a=>a.Request_Order_Date).FirstOrDefaultAsync();
             }
             else
             {
-                var request = await _context.Requests.Where(c => c.Handyman_SSN == id && c.Request_Status == 2 && c.Client_Rate == null && c.Request_Order_Date < DateTime.Now && c.Request_Date > DateTime.Now.AddDays(1)).OrderByDescending(a => a.Request_Order_Date).FirstOrDefaultAsync();
-                return request;
+                 request = await _context.Requests.Where(c => c.Handyman_SSN == id && c.Request_Status == 2 && c.Client_Rate == null && c.Request_Order_Date < DateTime.Now && c.Request_Date > DateTime.Now.AddDays(1)).OrderByDescending(a => a.Request_Order_Date).FirstOrDefaultAsync();
             }
+            return request;
         }
 
 
@@ -57,7 +57,7 @@ namespace HandyMan.Repository
             requestPayment.Payment_Amount = (int)(fixedRate - clientBalance);
             if (!requestPayment.Method)
             {
-                handyman.Balance += -(requestPayment.Payment_Amount);
+                handyman.Balance -= requestPayment.Payment_Amount;
             }
             else
             {
@@ -82,7 +82,7 @@ namespace HandyMan.Repository
             else
             {
                 var difference = payment.Payment_Amount - handyman.Handyman_Fixed_Rate;
-                client.Balance += difference>0 ? 0 : difference;
+                client.Balance += difference>0 ? 0 : -difference;
                 request.Payments.Remove(payment);
             }
             //in case of penalty
@@ -145,7 +145,7 @@ namespace HandyMan.Repository
             var requests = await _context.Requests.Where(c => c.Client_ID == id).ToListAsync();
             foreach (var requ in requests)
             {
-                if (requ.Request_Status == 1 && requ.Request_Order_Date.Minute < requ.Request_Order_Date.AddMinutes(1).Minute)
+                if (requ.Request_Status == 1 && requ.Request_Order_Date.Minute < requ.Request_Order_Date.AddMinutes(30).Minute)
                 {
                     requ.Request_Status = 4;
                     EditRequest(requ);
