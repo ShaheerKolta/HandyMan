@@ -158,7 +158,7 @@ namespace HandyMan.Controllers
             JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
             var x = t.Claims.ToList();
             
-            if (x[0].Value !=id.ToString())
+            if (x[0].Value !=id.ToString() && x[2].Value != "Admin")
             {
                 return Unauthorized();
             }
@@ -184,8 +184,15 @@ namespace HandyMan.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         [Authorize(Policy = "Handyman")]
-        public async Task<IActionResult> EditHandyman(int id, HandymanDto handymandto)
+        public async Task<IActionResult> EditHandyman(int id, HandymanDto handymandto, [FromHeader] string Authorization)
         {
+            JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
+            var x = t.Claims.ToList();
+
+            if (x[0].Value != id.ToString() && x[2].Value != "Admin")
+            {
+                return Unauthorized();
+            }
             if (id != handymandto.Handyman_SSN)
             {
                 return BadRequest();
@@ -234,9 +241,15 @@ namespace HandyMan.Controllers
         // DELETE: api/Handyman/5
         [HttpDelete("{id}")]
         [Authorize(Policy = "Handyman")]
-        public async Task<IActionResult> DeleteHandyman(int id)
+        public async Task<IActionResult> DeleteHandyman(int id, [FromHeader] string Authorization)
         {
+            JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
+            var x = t.Claims.ToList();
 
+            if (x[0].Value != id.ToString() && x[2].Value != "Admin")
+            {
+                return Unauthorized();
+            }
             var handyman = await handymanRepository.GetHandymanByIdAsync(id);
             if (handyman == null)
             {
@@ -250,15 +263,22 @@ namespace HandyMan.Controllers
             }
             catch
             {
-                return NotFound(new { message = "Client Is Not Found!" });
+                return NotFound(new { message = "Handyman Is Not Found!" });
             }
 
             return NoContent();
         }
         [HttpGet("status/{id}")]
         [Authorize(Policy ="Handyman")]
-        public async Task<IActionResult> ToggleHandymanStatus(int id)
+        public async Task<IActionResult> ToggleHandymanStatus(int id, [FromHeader] string Authorization)
         {
+            JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
+            var x = t.Claims.ToList();
+
+            if (x[0].Value != id.ToString())
+            {
+                return Unauthorized();
+            }
             Handyman handyman = await handymanRepository.GetHandymanByIdAsync(id);
             handyman.Open_For_Work = !handyman.Open_For_Work;
             return Ok();

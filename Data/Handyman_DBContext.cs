@@ -75,8 +75,8 @@ namespace HandyMan.Data
                     .WithMany(p => p.Handyman_SSNs)
                     .UsingEntity<Dictionary<string, object>>(
                         "Handyman_Region",
-                        l => l.HasOne<Region>().WithMany().HasForeignKey("Region_ID").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_Handyman_Region_Region"),
-                        r => r.HasOne<Handyman>().WithMany().HasForeignKey("Handyman_SSN").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_Handyman_Region_Handyman"),
+                        l => l.HasOne<Region>().WithMany().HasForeignKey("Region_ID").OnDelete(DeleteBehavior.Cascade).HasConstraintName("FK_Handyman_Region_Region"),
+                        r => r.HasOne<Handyman>().WithMany().HasForeignKey("Handyman_SSN").OnDelete(DeleteBehavior.Cascade).HasConstraintName("FK_Handyman_Region_Handyman"),
                         j =>
                         {
                             j.HasKey("Handyman_SSN", "Region_ID");
@@ -119,13 +119,13 @@ namespace HandyMan.Data
                 entity.HasOne(d => d.Client)
                     .WithMany(p => p.Requests)
                     .HasForeignKey(d => d.Client_ID)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_Request_Client");
 
                 entity.HasOne(d => d.Handyman_SSNNavigation)
                     .WithMany(p => p.Requests)
                     .HasForeignKey(d => d.Handyman_SSN)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_Request_Handyman");
             });
 
