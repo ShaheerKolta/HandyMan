@@ -41,11 +41,13 @@ namespace HandyMan.Repository
         public async Task<IEnumerable<Handyman>> GetVerifiedHandyManAsync(int sortType)
         {
             List<Handyman> handymen = new List<Handyman>();
+            if (sortType == 0)
+                handymen = await context.Handymen.Where(a => a.Approved == true).ToListAsync();
             // Sort by Open for work
-            if(sortType == 0)
+            if (sortType == 1)
                 handymen = await context.Handymen.Where(a=>a.Approved==true).OrderByDescending(s => s.Open_For_Work).ToListAsync();
             // Sort by fixed_rate
-            else if (sortType == 1)
+            else if (sortType == 2)
                 handymen = await context.Handymen.Where(a => a.Approved == true).OrderBy(s => s.Handyman_Fixed_Rate).ToListAsync();
             return handymen;
         }

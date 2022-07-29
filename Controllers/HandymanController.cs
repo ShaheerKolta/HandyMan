@@ -124,15 +124,19 @@ namespace HandyMan.Controllers
         }
 
         // GET: api/Handyman
-        [HttpGet("sortBy/{sortType:int}")]
+        [HttpGet("sortBy/{sortType:int?}")]
         [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<HandymanDto>>> GetHandyman(int sortType)//Verified only
+        public async Task<ActionResult<IEnumerable<HandymanDto>>> GetHandyman(int? sortType)//Verified only
         {
-            if(sortType !=0 && sortType != 1)
+            if (sortType == null)
+                sortType = 0;
+
+            if (sortType !=0 && sortType != 1 && sortType != 2)
                 return BadRequest(new { message = "Can't Find This Sort Type!" });
+            
             try
             {
-                var handymen = await handymanRepository.GetVerifiedHandyManAsync(sortType);
+                var handymen = await handymanRepository.GetVerifiedHandyManAsync((int)sortType);
                 var res = _mapper.Map<IEnumerable<HandymanDto>>(handymen);
                 return Ok(res);
             }
