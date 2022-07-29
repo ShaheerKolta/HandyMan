@@ -77,6 +77,32 @@ namespace HandyMan.Repository
             return false;
         }
 
+        public bool AddRegionToHandyman(int handymanssn, int regionId)
+        {
+            var handyman = context.Handymen.Find(handymanssn);
+            var region = context.Regions.Find(regionId);
+            if(region == null)
+            {
+                return false;
+            }
+            handyman.Regions.Add(region);
+            return true;
+
+        }
+
+        public bool RemoveRegionFromHandyman(int handymanssn, int regionId)
+        {
+            var handyman = context.Handymen.Find(handymanssn);
+            var region = context.Regions.Find(regionId);
+            if (region == null)
+            {
+                return false;
+            }
+            handyman.Regions.Remove(region);
+            return true;
+
+        }
+
         public async Task<bool> SaveAllAsync()
         {
             return await context.SaveChangesAsync() > 0;

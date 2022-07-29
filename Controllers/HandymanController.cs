@@ -49,7 +49,6 @@ namespace HandyMan.Controllers
 
         [HttpGet("Craft/{id}")]
         [AllowAnonymous]
-
         public async Task<ActionResult<IEnumerable<HandymanDto>>> GetHandymenByCraftId(int id)
         {
 
@@ -64,6 +63,41 @@ namespace HandyMan.Controllers
                 return NotFound(new { message = "Empty!" });
             }
         }
+
+        [HttpGet("region/{action:alpha}/{id:int}")]
+        [Authorize(Policy ="Handyman")]
+        public async Task<ActionResult> AddRegionToHandyman(string action ,int id, [FromHeader] string Authorization)
+        {
+            JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
+            var x = t.Claims.ToList();
+            bool res;
+            if (action.Equals("add"))
+            {
+                 res = handymanRepository.AddRegionToHandyman(int.Parse(x[0].Value), id);
+            }
+            else if (action.Equals("remove"))
+            {
+                res = handymanRepository.RemoveRegionFromHandyman(int.Parse(x[0].Value), id);
+            }
+            else
+            {
+                return BadRequest("Invalid Action");
+            }
+            
+            if(!res)
+                return NotFound(new { message = "Region Not Found" });
+            try
+            {
+                
+                await handymanRepository.SaveAllAsync();
+                return Ok(new {message="Region Added Sucessfully"});
+            }
+            catch
+            {
+                return NotFound(new { message = "Can't Save" });
+            }
+        }
+
 
         // GET: api/Handyman/Approve/5
         [HttpGet("Approve/{id}")]
