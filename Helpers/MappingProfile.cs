@@ -42,6 +42,11 @@ namespace HandyMan.Helpers
 
             CreateMap<RegionDto, Region>();
 
+            CreateMap<Region, RegionAdminDto>();
+
+            CreateMap<RegionAdminDto, Region>();
+
+
             //Craft DTO
             CreateMap<CraftDto, Craft>();
 

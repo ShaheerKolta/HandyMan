@@ -15,8 +15,5 @@ namespace HandyMan.Dtos
         [Unicode(false)]
         public string Craft_Name { get; set; }
 
-        [InverseProperty("Craft")]
-        public virtual ICollection<HandymanDto> Handymen { get; set; }
-
     }
 }

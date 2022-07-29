@@ -31,7 +31,7 @@ namespace HandyMan.Controllers
 
         // GET: api/Craft
         [HttpGet("FindCrafts")]
-
+        [AllowAnonymous] // tested
         public async Task<ActionResult<IEnumerable<CraftDto>>> GetCrafts()
         {
             try
@@ -47,20 +47,18 @@ namespace HandyMan.Controllers
         }
 
         [HttpGet("{id:int}")]
-
-
-        public async Task<ActionResult<CraftDto>> GetCraftbyId(int id)
+        [Authorize(Policy = "Admin")] // tested
+        public async Task<ActionResult<Craft>> GetCraftbyId(int id)
         {
             try
             {
                 var craft = await _craftRepository.GetCraftByIdAsync(id);
-                var craftToReturn = _mapper.Map<IEnumerable<CraftDto>>(craft);
 
                 if (craft == null)
                 {
                     return NotFound(new { message = "Craft Is Not Found!" });
                 }
-                return Ok(craftToReturn);
+                return Ok(craft);
             }
             catch
             {
@@ -71,7 +69,7 @@ namespace HandyMan.Controllers
 
 
         [HttpPut("{id}")]
-        [Authorize(Policy = "Admin")]
+        [Authorize(Policy = "Admin")] // tested
         public async Task<IActionResult> EditCraft(int id, CraftDto craftdto)
         {
             if (id != craftdto.Craft_ID)
@@ -97,7 +95,7 @@ namespace HandyMan.Controllers
         // POST: api/Craft
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        [Authorize(Policy = "Admin")]
+        [Authorize(Policy = "Admin")] // tested
         public async Task<ActionResult<CraftDto>> PostCraft(CraftDto craftdto)
         {
             if (craftdto == null)
@@ -119,7 +117,7 @@ namespace HandyMan.Controllers
                 {
                     return BadRequest(new { Error = "Can't Add This User!" });
                 }
-                return CreatedAtAction("GetCraft", new { id = craft.Craft_ID }, craft);
+                return CreatedAtAction("GetCraftbyId", new { id = craft.Craft_ID }, craft);
             }
             else
             {
@@ -130,7 +128,7 @@ namespace HandyMan.Controllers
 
         // DELETE: api/Craft/5
         [HttpDelete("{id}")]
-        [Authorize(Policy = "Admin")]
+        [Authorize(Policy = "Admin")] // tested -> Same Region Problem ( can not cascade / must be empty )
         public async Task<IActionResult> DeleteCraft(int id)
         {
             try

@@ -31,7 +31,7 @@ namespace HandyMan.Controllers
 
         // GET: api/Schedule
         [HttpGet]
-        [Authorize(Policy ="Admin")]
+        [Authorize(Policy ="Admin")] // tested
         public async Task<ActionResult<IEnumerable<ScheduleDto>>> GetSchedules()
         {
             try
@@ -49,12 +49,16 @@ namespace HandyMan.Controllers
 
 
         [HttpGet("{id}")]
-        [Authorize(Policy = "Request")]
+        [Authorize(Policy = "Request")] // tested
         public async Task<ActionResult<IEnumerable<ScheduleDto>>> GetSchedulesByHandymanSsn(int id)
         {
             try
             {
                 var schedules = await _scheduleRepository.GetSchedulesByHandymanSsnAsync(id);
+                
+                if (schedules == null)
+                    return BadRequest(new {message = "Handyman Not Found"});
+                
                 var shedulesReturn = _mapper.Map<IEnumerable<ScheduleDto>>(schedules);
                 return Ok(shedulesReturn);
             }
@@ -68,7 +72,7 @@ namespace HandyMan.Controllers
         // POST: api/Schedule
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        [Authorize(Policy ="Handyman")]
+        [Authorize(Policy ="Handyman")] // tested
         public async Task<ActionResult<ScheduleDto>> PostSchedule(ScheduleDto scheduleDto , [FromHeader] string Authorization)
         {
             JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
@@ -107,7 +111,7 @@ namespace HandyMan.Controllers
 
         // DELETE: api/Schedule/5
         [HttpDelete]
-        [Authorize(Policy ="Handyman")]
+        [Authorize(Policy ="Handyman")] // tested
         public async Task<IActionResult> DeleteSchedule(ScheduleDto scheduleDto , [FromHeader] string Authorization)
         {
             JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));

@@ -102,7 +102,7 @@ namespace HandyMan.Controllers
             }
         }
         [HttpGet("cancel/{id}")]
-        [Authorize(Policy = "Request")]
+        [Authorize(Policy = "Request")] // tested
         public async Task<ActionResult<RequestDto>> CancelRequest(int id, [FromHeader] string Authorization)
         {
             JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
@@ -177,7 +177,7 @@ namespace HandyMan.Controllers
 
 
         [HttpGet("handyman/{handymanSsn}")]
-        [Authorize(Policy = "Handyman")]
+        [Authorize(Policy = "Handyman")] // tested
         //function to get all requests of a handyman
         public async Task<ActionResult<IEnumerable<RequestDto>>> GetRequestsByHandymanSsn(int handymanSsn, [FromHeader] string Authorization)
         {
@@ -280,7 +280,7 @@ namespace HandyMan.Controllers
         // PUT: api/Request/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        [Authorize(Policy = "Admin")]
+        [Authorize(Policy = "Admin")] // tested
         public async Task<IActionResult> EditRequest(int id, RequestDto requestDto)
         {
             if (id != requestDto.Request_ID)
@@ -364,7 +364,7 @@ namespace HandyMan.Controllers
 
         // DELETE: api/Request/5
         [HttpDelete("{id}")]
-        [Authorize(Policy = "Admin")] 
+        [Authorize(Policy = "Admin")] // tested
         public async Task<IActionResult> DeleteRequest(int id)
         {
             try

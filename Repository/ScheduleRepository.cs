@@ -21,6 +21,11 @@ namespace HandyMan.Repository
 
         public async Task<IEnumerable<Schedule>> GetSchedulesByHandymanSsnAsync(int id)
         {
+            var handyman = context.Handymen.Find(id);
+            if (handyman == null)
+            {
+                return null;
+            }
             var schedules = await context.Schedules.Where(a => a.Handy_SSN == id && a.Schedule_Date.Day>=DateTime.Now.Day).ToListAsync();
             return schedules;
         }

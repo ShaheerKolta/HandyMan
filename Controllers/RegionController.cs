@@ -29,7 +29,7 @@ namespace HandyMan.Controllers
 
         // GET: api/Region
         [HttpGet]
-        [Authorize(Policy = "Admin")]
+        [AllowAnonymous] // tested
         public async Task<ActionResult<IEnumerable<RegionDto>>> GetRegions()
         {
             try
@@ -46,13 +46,13 @@ namespace HandyMan.Controllers
 
         // GET: api/Region/5
         [HttpGet("{id}")]
-        [Authorize(Policy = "Admin")]
-        public async Task<ActionResult<RegionDto>> GetRegion(int id)
+        [Authorize(Policy = "Admin")] // tested
+        public async Task<ActionResult<RegionAdminDto>> GetRegion(int id)
         {
             try
             {
                 var region = await _regionRepository.GetRegionByIdAsync(id);
-                var regionToReturn = _mapper.Map<RegionDto>(region);
+                var regionToReturn = _mapper.Map<RegionAdminDto>(region);
                 return Ok(regionToReturn);
             }
             catch
@@ -64,7 +64,7 @@ namespace HandyMan.Controllers
         // PUT: api/Region/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        [Authorize(Policy = "Admin")]
+        [Authorize(Policy = "Admin")] // tested
         public async Task<IActionResult> PutRegion(int id, RegionDto regionDto)
         {
             if (id != regionDto.Region_ID)
@@ -89,7 +89,7 @@ namespace HandyMan.Controllers
         // POST: api/Region
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        [Authorize(Policy = "Admin")]
+        [Authorize(Policy = "Admin")] // tested
         public async Task<ActionResult<RegionDto>> PostRegion(RegionDto regionDto)
         {
             if (regionDto == null)
@@ -119,7 +119,7 @@ namespace HandyMan.Controllers
 
         // DELETE: api/Region/5
         [HttpDelete("{id}")]
-        [Authorize(Policy = "Admin")]
+        [Authorize(Policy = "Admin")] // tested -> Not working for cascading on client region id
         public async Task<IActionResult> DeleteRegion(int id)
         {
             try

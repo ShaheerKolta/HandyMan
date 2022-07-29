@@ -46,6 +46,7 @@ namespace HandyMan.Data
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Client_Region");
                 //entity.HasIndex(e => e.Client_Email).IsUnique();
+
             });
 
             modelBuilder.Entity<Craft>(entity =>

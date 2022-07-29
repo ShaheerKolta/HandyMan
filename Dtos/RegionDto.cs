@@ -11,11 +11,12 @@ namespace HandyMan.Dtos
         [Required]
         [StringLength(30)]
         public string Region_Name { get; set; }
+    }
 
+    public class RegionAdminDto : RegionDto
+    {
         public virtual ICollection<ClientDto>? Clients { get; set; }
 
-        [ForeignKey("Region_ID")]
-        [InverseProperty("Regions")]
         public virtual ICollection<HandymanDto>? Handyman_SSNs { get; set; }
     }
 }

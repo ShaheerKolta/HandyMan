@@ -29,7 +29,7 @@ namespace HandyMan.Controllers
 
         // GET: api/Payment
         [HttpGet]
-        [Authorize(Policy = "Admin")]
+        [Authorize(Policy = "Admin")] // tested
         public async Task<ActionResult<IEnumerable<PaymentDto>>> GetPayments()
         {
             try
@@ -50,18 +50,12 @@ namespace HandyMan.Controllers
 
         // GET: api/Payment/5
         [HttpGet("{id}")]
-        [Authorize(Policy ="Request")]
+        [Authorize(Policy ="Request")] // tested
         public async Task<ActionResult<PaymentDto>> GetPayment(int id)
         {
             try
             {
                 var payment = await _paymentRepository.GetPaymentByIdAsync(id);
-
-                if (payment == null)
-                {
-                    return NotFound();
-                }
-
                 var paymentToReturn = _mapper.Map<PaymentDto>(payment);
                 return paymentToReturn;
             }
@@ -72,8 +66,8 @@ namespace HandyMan.Controllers
             
         }
 
-        [HttpGet("/Request/{id}")]
-        [Authorize(Policy = "Request")]
+        [HttpGet("Request/{id}")]
+        [Authorize(Policy = "Request")] // tested
         public async Task<ActionResult<PaymentDto>> GetPaymentByRequestId(int id)
         {
             try
@@ -98,7 +92,7 @@ namespace HandyMan.Controllers
         // PUT: api/Payment/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        [Authorize(Policy ="Admin")]
+        [Authorize(Policy ="Admin")] // tested
         public async Task<IActionResult> EditPayment(int id, PaymentDto paymentDto)
         {
             if (id != paymentDto.Payment_ID)
@@ -123,8 +117,7 @@ namespace HandyMan.Controllers
         // POST: api/Payment
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        //[Authorize(Policy ="Admin")]
-        [AllowAnonymous]
+        [Authorize(Policy ="Admin")] // tested
         public async Task<ActionResult<PaymentDto>> PostPayment(PaymentDto paymentDto)
         {
             
@@ -150,7 +143,7 @@ namespace HandyMan.Controllers
 
         // DELETE: api/Payment/5
         [HttpDelete("{id}")]
-        [Authorize(Policy ="Admin")]
+        [Authorize(Policy ="Admin")] // tested
         public async Task<IActionResult> DeletePayment(int id)
         {
             try
@@ -166,7 +159,7 @@ namespace HandyMan.Controllers
         }
 
         [HttpDelete("Request/{id}")]
-        [Authorize(Policy ="Admin")]
+        [Authorize(Policy ="Admin")] // tested
         public async Task<IActionResult> DeletePaymentByRequestId(int id)
         {
             try

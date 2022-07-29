@@ -38,7 +38,7 @@ namespace HandyMan.Models
         [StringLength(50)]
         public string Password { get; set; }
 
-        public int Region_ID { get; set; }
+        public int Region_ID { get; set; } = 0;
 
         [ForeignKey("Region_ID")]
         [InverseProperty("Clients")]

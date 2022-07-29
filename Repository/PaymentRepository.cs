@@ -20,7 +20,7 @@ namespace HandyMan.Repository
 
         public void DeletePaymentById(int id)
         {
-            _context.Payments.Remove(_context.Payments.Find(id));
+            _context.Payments.Remove(_context.Payments.Where(a => a.Payment_ID == id).FirstOrDefault());
         }
 
         public void DeletePaymentByRequestId(int id)
@@ -40,7 +40,7 @@ namespace HandyMan.Repository
 
         public async Task<Payment> GetPaymentByIdAsync(int id)
         {
-            return await _context.Payments.FindAsync(id);
+            return await _context.Payments.Where(a => a.Payment_ID == id).FirstOrDefaultAsync();
         }
 
         public async Task<Payment> GetPaymentByRequestIdAsync(int id)

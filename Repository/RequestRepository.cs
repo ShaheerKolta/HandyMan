@@ -71,7 +71,6 @@ namespace HandyMan.Repository
             var handyman = _context.Handymen.Find(request.Handyman_SSN);
             var client = _context.Clients.Find(request.Client_ID);
             var payment = request.Payments.FirstOrDefault();
-            request.Request_Status = role == 1 ? 4 : 3; //if canceled by client then status is 3 , by handyman is 4
             //in case of cash
             if (!payment.Method)
             {
@@ -86,7 +85,7 @@ namespace HandyMan.Repository
                 request.Payments.Remove(payment);
             }
             //in case of penalty
-            if (request.Request_Date.AddHours(-1) <= DateTime.Now && role!=2)
+            if (request.Request_Status == 2 && request.Request_Date.AddHours(-1) <= DateTime.Now && role!=2)
             {
                 if (role == 0)
                 {
@@ -99,6 +98,7 @@ namespace HandyMan.Repository
                     handyman.Balance -= (int)(handyman.Handyman_Fixed_Rate * 0.1);
                 }
             }
+            request.Request_Status = role == 1 ? 4 : 3; //if canceled by client then status is 3 , by handyman is 4
             _context.SaveChanges();
         }
 
