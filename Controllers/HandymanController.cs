@@ -64,18 +64,18 @@ namespace HandyMan.Controllers
             }
         }
 
-        [HttpGet("region/{action:alpha}/{id:int}")]
+        [HttpGet("region/{act:alpha}/{id:int}")]
         [Authorize(Policy ="Handyman")]
-        public async Task<ActionResult> AddRegionToHandyman(string action ,int id, [FromHeader] string Authorization)
+        public async Task<ActionResult> HandymanRegion(string act, int id, [FromHeader] string Authorization)
         {
             JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
             var x = t.Claims.ToList();
             bool res;
-            if (action.Equals("add"))
+            if (act.Equals("add"))
             {
                  res = handymanRepository.AddRegionToHandyman(int.Parse(x[0].Value), id);
             }
-            else if (action.Equals("remove"))
+            else if (act.Equals("remove"))
             {
                 res = handymanRepository.RemoveRegionFromHandyman(int.Parse(x[0].Value), id);
             }
