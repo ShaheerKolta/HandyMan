@@ -149,7 +149,7 @@ namespace HandyMan.Controllers
         //Client Functions
 
         [HttpGet("client/{id}")]
-        [Authorize(Policy ="Client")]
+        [Authorize(Policy ="Client")] // tested
         public async Task<ActionResult<IEnumerable<RequestDto>>> GetRequestsByClientId(int id, [FromHeader] string Authorization)
         {
             JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
@@ -202,7 +202,7 @@ namespace HandyMan.Controllers
 
 
         [HttpGet("handyman/pending/{handymanSsn}")]
-        [Authorize(Policy = "Handyman")]
+        [Authorize(Policy = "Handyman")] // tested
         //function to get all Pending requests of a handyman
         public async Task<ActionResult<IEnumerable<RequestDto>>> GetActiveRequestsByHandymanSsn(int handymanSsn, [FromHeader] string Authorization)
         {
@@ -228,7 +228,7 @@ namespace HandyMan.Controllers
 
 
         [HttpGet("accept/{id}")]
-        [Authorize(Policy ="Handyman")]
+        [Authorize(Policy ="Handyman")] // tested
         public async Task<ActionResult<RequestDto>> AcceptPendingRequest(int id, [FromHeader] string Authorization)
         {
             JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
@@ -341,14 +341,12 @@ namespace HandyMan.Controllers
                 //check if request is from schedule or Now 
                 if (request.Request_Date.Day >= DateTime.Now.AddDays(1).Day)
                     request.Request_Status = 0;
-                _requestRepository.CreateRequest(request);
-                _requestRepository.CreatePaymentByRequestId(request);
 
+                _requestRepository.CreateRequest(request);
                 try
                 {
+                    _requestRepository.CreatePaymentByRequestId(request);
                     await _requestRepository.SaveAllAsync();
-                    
-                   
                 }
                 catch
                 {

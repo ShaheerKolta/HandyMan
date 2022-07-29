@@ -31,11 +31,11 @@ namespace HandyMan.Repository
             //if role == 0 role is client if role ==1 then role is Handyman
             if (role == 0)
             {
-                 request = await _context.Requests.Where(c => c.Client_ID == id && c.Request_Status == 2 && c.Handy_Rate==null && c.Request_Order_Date < DateTime.Now && c.Request_Date < DateTime.Now.AddDays(1)).OrderByDescending(a=>a.Request_Order_Date).FirstOrDefaultAsync();
+                 request = await _context.Requests.Where(c => c.Client_ID == id && c.Request_Status == 2 && c.Handy_Rate==null && c.Request_Date < DateTime.Now).OrderByDescending(a=>a.Request_Order_Date).FirstOrDefaultAsync();
             }
             else
             {
-                 request = await _context.Requests.Where(c => c.Handyman_SSN == id && c.Request_Status == 2 && c.Client_Rate == null && c.Request_Order_Date < DateTime.Now && c.Request_Date < DateTime.Now.AddDays(1)).OrderByDescending(a => a.Request_Order_Date).FirstOrDefaultAsync();
+                 request = await _context.Requests.Where(c => c.Handyman_SSN == id && c.Request_Status == 2 && c.Client_Rate == null && c.Request_Date < DateTime.Now).OrderByDescending(a => a.Request_Order_Date).FirstOrDefaultAsync();
             }
             return request;
         }
@@ -54,7 +54,7 @@ namespace HandyMan.Repository
             var fixedRate = handyman.Handyman_Fixed_Rate;
             var client = _context.Clients.Find(request.Client_ID);
             var clientBalance = client.Balance;
-            requestPayment.Payment_Amount = (int)(fixedRate - clientBalance);
+            requestPayment.Payment_Amount = (int) (fixedRate - clientBalance);
             if (!requestPayment.Method)
             {
                 handyman.Balance -= requestPayment.Payment_Amount;
@@ -153,7 +153,7 @@ namespace HandyMan.Repository
             var requests = await _context.Requests.Where(c => c.Client_ID == id).ToListAsync();
             foreach (var requ in requests)
             {
-                if (requ.Request_Status == 1 && requ.Request_Order_Date.Minute < requ.Request_Order_Date.AddMinutes(30).Minute)
+                if (requ.Request_Status == 1 && requ.Request_Order_Date.AddMinutes(30) < DateTime.Now)
                 {
                     requ.Request_Status = 4;
                     EditRequest(requ);
