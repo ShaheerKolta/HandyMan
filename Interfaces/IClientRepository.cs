@@ -10,8 +10,7 @@ namespace HandyMan.Interfaces
         void CalculateClientRate(Client client);
         void CreateClient(Client client);
         void EditClient(Client client);
-        void DeleteClientById(int id);
+        void DeleteClient(Client client);
         Task<bool> SaveAllAsync();
-        Task<IEnumerable<Handyman>> GetHandymenAsync();
     }
 }

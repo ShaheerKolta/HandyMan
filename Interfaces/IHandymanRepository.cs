@@ -10,7 +10,7 @@ namespace HandyMan.Interfaces
         void CalculateHandymanRate(Handyman handyman);
         void CreateHandyman(Handyman handyman);
         void EditHandyman(Handyman handyman);
-        void DeleteHandymanById(int id);
+        void DeleteHandyman(Handyman handyman);
         bool ApproveHandymanById(Handyman handyman);
         bool AddRegionToHandyman(int handymanssn , int regionId);
         bool RemoveRegionFromHandyman(int handymanssn, int regionId);

@@ -263,7 +263,7 @@ namespace HandyMan.Controllers
 
             try
             {
-                handymanRepository.DeleteHandymanById(id);
+                handymanRepository.DeleteHandyman(handyman);
                 await handymanRepository.SaveAllAsync();
             }
             catch

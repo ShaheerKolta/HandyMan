@@ -31,11 +31,11 @@ namespace HandyMan.Repository
             //if role == 0 role is client if role ==1 then role is Handyman
             if (role == 0)
             {
-                 request = await _context.Requests.Where(c => c.Client_ID == id && c.Request_Status == 2 && c.Handy_Rate==null && c.Request_Order_Date < DateTime.Now && c.Request_Date > DateTime.Now.AddDays(1)).OrderByDescending(a=>a.Request_Order_Date).FirstOrDefaultAsync();
+                 request = await _context.Requests.Where(c => c.Client_ID == id && c.Request_Status == 2 && c.Handy_Rate==null && c.Request_Order_Date < DateTime.Now && c.Request_Date < DateTime.Now.AddDays(1)).OrderByDescending(a=>a.Request_Order_Date).FirstOrDefaultAsync();
             }
             else
             {
-                 request = await _context.Requests.Where(c => c.Handyman_SSN == id && c.Request_Status == 2 && c.Client_Rate == null && c.Request_Order_Date < DateTime.Now && c.Request_Date > DateTime.Now.AddDays(1)).OrderByDescending(a => a.Request_Order_Date).FirstOrDefaultAsync();
+                 request = await _context.Requests.Where(c => c.Handyman_SSN == id && c.Request_Status == 2 && c.Client_Rate == null && c.Request_Order_Date < DateTime.Now && c.Request_Date < DateTime.Now.AddDays(1)).OrderByDescending(a => a.Request_Order_Date).FirstOrDefaultAsync();
             }
             return request;
         }

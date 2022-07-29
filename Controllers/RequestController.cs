@@ -34,7 +34,7 @@ namespace HandyMan.Controllers
 
         // GET: api/Request
         [HttpGet]
-        [Authorize(Policy = "Admin")]
+        [Authorize(Policy = "Admin")] // tested
         public async Task<ActionResult<IEnumerable<RequestDto>>> GetRequests()
         {
             try
@@ -51,11 +51,9 @@ namespace HandyMan.Controllers
         
 
 
-
-
         // GET: api/Request/5
         [HttpGet("{id:int}")]
-        [Authorize(Policy = "Request")]
+        [Authorize(Policy = "Request")] // tested
         public async Task<ActionResult<RequestDto>> GetRequest(int id, [FromHeader] string Authorization)
         {
             JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
@@ -151,10 +149,16 @@ namespace HandyMan.Controllers
         //Client Functions
 
         [HttpGet("client/{id}")]
-        //[Authorize(Policy ="Client")]
-        [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<RequestDto>>> GetRequestsByClientId(int id)
+        [Authorize(Policy ="Client")]
+        public async Task<ActionResult<IEnumerable<RequestDto>>> GetRequestsByClientId(int id, [FromHeader] string Authorization)
         {
+            JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
+            var x = t.Claims.ToList();
+
+            if (x[0].Value != id.ToString() && x[2].Value != "Admin")
+            {
+                return Unauthorized();
+            }
             try
             {
                 var requests = await _requestRepository.GetRequestsByClientIdAsync(id);
@@ -175,8 +179,15 @@ namespace HandyMan.Controllers
         [HttpGet("handyman/{handymanSsn}")]
         [Authorize(Policy = "Handyman")]
         //function to get all requests of a handyman
-        public async Task<ActionResult<IEnumerable<RequestDto>>> GetRequestsByHandymanSsn(int handymanSsn)
+        public async Task<ActionResult<IEnumerable<RequestDto>>> GetRequestsByHandymanSsn(int handymanSsn, [FromHeader] string Authorization)
         {
+            JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
+            var x = t.Claims.ToList();
+
+            if (x[0].Value != handymanSsn.ToString() && x[2].Value != "Admin")
+            {
+                return Unauthorized();
+            }
             try
             {
                 var requests = await _requestRepository.GetRequestsByHandymanSsnAsync(handymanSsn);
@@ -193,8 +204,15 @@ namespace HandyMan.Controllers
         [HttpGet("handyman/pending/{handymanSsn}")]
         [Authorize(Policy = "Handyman")]
         //function to get all Pending requests of a handyman
-        public async Task<ActionResult<IEnumerable<RequestDto>>> GetActiveRequestsByHandymanSsn(int handymanSsn)
+        public async Task<ActionResult<IEnumerable<RequestDto>>> GetActiveRequestsByHandymanSsn(int handymanSsn, [FromHeader] string Authorization)
         {
+            JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
+            var x = t.Claims.ToList();
+
+            if (x[0].Value != handymanSsn.ToString() && x[2].Value != "Admin")
+            {
+                return Unauthorized();
+            }
             try
             {
                 var requests = await _requestRepository.GetActiveRequestsByHandymanSsnAsync(handymanSsn);
@@ -210,20 +228,17 @@ namespace HandyMan.Controllers
 
 
         [HttpGet("accept/{id}")]
-        //[Authorize(Policy ="Handyman")]
-        [AllowAnonymous]
-        public async Task<ActionResult<RequestDto>> AcceptPendingRequest(int id)
+        [Authorize(Policy ="Handyman")]
+        public async Task<ActionResult<RequestDto>> AcceptPendingRequest(int id, [FromHeader] string Authorization)
         {
-            /*
-             * [FromHeader] string Authentication
-             * JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
+            JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
             var x = t.Claims.ToList();
 
             
-            if (x[0].Value != id.ToString())
+            if (x[0].Value != id.ToString() && x[2].Value != "Handyman")
             {
                 return Unauthorized();
-            }*/
+            }
 
             var request = await _requestRepository.GetRequestByIdAsync(id);
             if (request == null)
@@ -291,11 +306,18 @@ namespace HandyMan.Controllers
         // POST: api/Request
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        //[Authorize(Policy = "Client")]
-        [AllowAnonymous]
-        public async Task<ActionResult<RequestDto>> PostRequest(RequestDto requestDto)
+        [Authorize(Policy = "Client")] // tested
+        public async Task<ActionResult<RequestDto>> PostRequest(RequestDto requestDto, [FromHeader] string Authorization)
         {
-            
+            JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
+            var x = t.Claims.ToList();
+
+
+            if (x[0].Value != requestDto.Client_ID.ToString() && x[2].Value != "Client")
+            {
+                return Unauthorized();
+            }
+
             if (requestDto == null)
             {
                 return NotFound(new { message = "Request Is Not Found!" });
@@ -344,8 +366,7 @@ namespace HandyMan.Controllers
 
         // DELETE: api/Request/5
         [HttpDelete("{id}")]
-        // Admin or Handyman
-        [Authorize(Policy = "Handyman")] // If Handyman -> Decline -> delete ? or cancelled ??
+        [Authorize(Policy = "Admin")] 
         public async Task<IActionResult> DeleteRequest(int id)
         {
             try

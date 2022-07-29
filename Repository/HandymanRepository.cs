@@ -18,9 +18,9 @@ namespace HandyMan.Repository
             await context.Handymen.AddAsync(handyman);
         }
 
-        public void DeleteHandymanById(int id)
+        public void DeleteHandyman(Handyman handyman)
         {
-            context.Handymen.Remove(context.Handymen.Find(id));
+            context.Handymen.Remove(handyman);
         }
 
         public void EditHandyman(Handyman handyman)

@@ -45,24 +45,6 @@ namespace HandyMan.Controllers
         }
 
 
-        // to be Checked With Amal Tommorow 
-        // GET: api/Client
-        [HttpGet("FindHandymen")]
-        [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<HandymanDto>>> GetHandymen()
-        {
-            try
-            {
-                var handymen = await _clientRepository.GetHandymenAsync();
-                var handymenToReturn = _mapper.Map<IEnumerable<HandymanDto>>(handymen);
-                return Ok(handymenToReturn);
-            }
-            catch
-            {
-                return NotFound(new { message = "Empty!" });
-            }
-        }
-
         // GET: api/Client/5
         [HttpGet("{id:int}")]
         [Authorize(Policy ="Client")]
@@ -74,10 +56,8 @@ namespace HandyMan.Controllers
         {
             JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
             var x = t.Claims.ToList();
-            
 
-            var c = x[0];
-            if (x[0].Value != id.ToString())
+            if (x[0].Value != id.ToString() && x[2].Value != "Admin")
             {
                 return Unauthorized();
             }
@@ -98,7 +78,6 @@ namespace HandyMan.Controllers
         }
 
         [HttpGet("{email}")]
-        
         public async Task<ActionResult<ClientDto>> GetClientByEmail(string email)
         {
             try
@@ -120,8 +99,16 @@ namespace HandyMan.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         [Authorize(Policy = "Client")]
-        public async Task<IActionResult> EditClient(int id, ClientDto clientDto)
+        public async Task<IActionResult> EditClient(int id, ClientDto clientDto, [FromHeader] string Authorization)
         {
+            JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
+            var x = t.Claims.ToList();
+
+            if (x[0].Value != id.ToString() && x[2].Value != "Admin")
+            {
+                return Unauthorized();
+            }
+
             if (id != clientDto.Client_ID)
             {
                 return NotFound(new { message = "Client Is Not Found!" });
@@ -138,7 +125,7 @@ namespace HandyMan.Controllers
                 return BadRequest();
             }
 
-            return NoContent();
+            return CreatedAtAction("GetClient", new { id = clientDto.Client_ID }, clientDto);
         }
 
         // POST: api/Client
@@ -175,16 +162,35 @@ namespace HandyMan.Controllers
         // DELETE: api/Client/5
         [HttpDelete("{id}")]
         [Authorize(Policy = "Client")]
-        public async Task<IActionResult> DeleteClient(int id)
+        public async Task<IActionResult> DeleteClient(int id, [FromHeader] string Authorization)
         {
+            JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
+            var x = t.Claims.ToList();
+
+
+            if (x[0].Value != id.ToString() && x[2].Value != "Admin")
+            {
+                return Unauthorized();
+            }
+            var client = await _clientRepository.GetClientByIdAsync(id);
+            if (client == null)
+            {
+                return NotFound(new { message = "Client Not Found!" });
+            }
+            // Check balance
+            if (client.Balance != 0)
+            {
+                return BadRequest(new { message = "You have an outstanding balance, Delete failed !!" });
+            }
+
             try
             {
-                _clientRepository.DeleteClientById(id);
+                _clientRepository.DeleteClient(client);
                 await _clientRepository.SaveAllAsync();
             }
             catch
             {
-                return NotFound(new { message = "Client Is Not Found!" });
+                return BadRequest(new { message = "Delete Failed!" });
             }
 
             return NoContent();

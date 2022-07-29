@@ -63,19 +63,14 @@ namespace HandyMan.Repository
             _context.Entry(client).State = EntityState.Modified;
         }
 
-        public void DeleteClientById(int id)
+        public void DeleteClient(Client client)
         {
-            _context.Clients.Remove(_context.Clients.Find(id));
+            _context.Clients.Remove(client);
         }
 
         public async Task<bool> SaveAllAsync()
         {
             return await _context.SaveChangesAsync() > 0;
-        }
-
-        public async Task<IEnumerable<Handyman>> GetHandymenAsync()
-        {
-            return await _context.Handymen.OrderByDescending(s => s.Handyman_Fixed_Rate).ToListAsync();
         }
     }
 }
