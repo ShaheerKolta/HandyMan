@@ -38,9 +38,16 @@ namespace HandyMan.Repository
             return await context.Handymen.Where(a => a.CraftID == craftId && a.Approved == true).ToListAsync();
         }
 
-        public async Task<IEnumerable<Handyman>> GetVerifiedHandyManAsync()
+        public async Task<IEnumerable<Handyman>> GetVerifiedHandyManAsync(int sortType)
         {
-            return await context.Handymen.Where(a=>a.Approved==true).ToListAsync();
+            List<Handyman> handymen = new List<Handyman>();
+            // Sort by Open for work
+            if(sortType == 0)
+                handymen = await context.Handymen.Where(a=>a.Approved==true).OrderByDescending(s => s.Open_For_Work).ToListAsync();
+            // Sort by fixed_rate
+            else if (sortType == 1)
+                handymen = await context.Handymen.Where(a => a.Approved == true).OrderBy(s => s.Handyman_Fixed_Rate).ToListAsync();
+            return handymen;
         }
 
         public async Task<Handyman> GetHandymanByIdAsync(int id)

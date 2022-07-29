@@ -5,7 +5,7 @@ namespace HandyMan.Interfaces
     public interface IHandymanRepository
     {
         Task<IEnumerable<Handyman>> GetHandyManAsync();
-        Task<IEnumerable<Handyman>> GetVerifiedHandyManAsync();
+        Task<IEnumerable<Handyman>> GetVerifiedHandyManAsync(int sortType);
         Task<Handyman> GetHandymanByIdAsync(int id);
         void CalculateHandymanRate(Handyman handyman);
         void CreateHandyman(Handyman handyman);
