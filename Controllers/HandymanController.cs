@@ -90,7 +90,9 @@ namespace HandyMan.Controllers
             {
                 
                 await handymanRepository.SaveAllAsync();
-                return Ok(new {message="Region Added Sucessfully"});
+                if (act.Equals("add"))
+                    return Ok(new {message="Region Added Sucessfully"});
+                else return Ok(new { message = "Region Removed Sucessfully" });
             }
             catch
             {
