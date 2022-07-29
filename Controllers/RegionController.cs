@@ -29,7 +29,9 @@ namespace HandyMan.Controllers
 
         // GET: api/Region
         [HttpGet]
-        [Authorize(Policy = "Admin")]
+        // [Authorize(Policy = "Admin")]
+        [AllowAnonymous]
+
         public async Task<ActionResult<IEnumerable<RegionDto>>> GetRegions()
         {
             try
@@ -46,7 +48,7 @@ namespace HandyMan.Controllers
 
         // GET: api/Region/5
         [HttpGet("{id}")]
-        [Authorize(Policy = "Admin")]
+        //[Authorize(Policy = "Admin")]
         public async Task<ActionResult<RegionDto>> GetRegion(int id)
         {
             try
