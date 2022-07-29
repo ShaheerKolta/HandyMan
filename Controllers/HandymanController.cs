@@ -255,6 +255,11 @@ namespace HandyMan.Controllers
             {
                 return NotFound();
             }
+            // Check balance
+            if (handyman.Balance != 0)
+            {
+                return BadRequest(new {message = "You have an outstanding balance, Delete failed !!"});
+            }
 
             try
             {
@@ -281,6 +286,7 @@ namespace HandyMan.Controllers
             }
             Handyman handyman = await handymanRepository.GetHandymanByIdAsync(id);
             handyman.Open_For_Work = !handyman.Open_For_Work;
+            await handymanRepository.SaveAllAsync();
             return Ok();
         }
 
