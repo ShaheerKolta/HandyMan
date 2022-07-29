@@ -83,7 +83,7 @@ namespace HandyMan.Data
 
                             j.ToTable("Handyman_Region");
 
-                            j.IndexerProperty<int>("Handyman_SSN").ValueGeneratedOnAdd();
+                            j.IndexerProperty<int>("Handyman_SSN").ValueGeneratedNever();
                         });
             });
 
