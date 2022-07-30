@@ -49,20 +49,21 @@ namespace HandyMan.Repository
 
         public async void CreatePaymentByRequestId(Request request)
         {
-            var requestPayment = request.Payments.FirstOrDefault();
+            Payment payment = new Payment { Method = request.Method };
             var handyman = _context.Handymen.Find(request.Handyman_SSN);
             var fixedRate = handyman.Handyman_Fixed_Rate;
             var client = _context.Clients.Find(request.Client_ID);
             var clientBalance = client.Balance;
-            requestPayment.Payment_Amount = (int) (fixedRate - clientBalance);
-            if (!requestPayment.Method)
+            payment.Payment_Amount = (int) (fixedRate - clientBalance);
+            if (!payment.Method)
             {
-                handyman.Balance -= requestPayment.Payment_Amount;
+                handyman.Balance -= payment.Payment_Amount;
             }
             else
             {
                 client.Balance = 0;
             }
+            request.Payments.Add(payment);
         }
 
         public void CancelByRequestId(int id, int role)//role =0 client , role==1 handyman , role==2 admin
