@@ -46,6 +46,7 @@ namespace HandyMan.Data
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Client_Region");
                 //entity.HasIndex(e => e.Client_Email).IsUnique();
+
             });
 
             modelBuilder.Entity<Craft>(entity =>
@@ -75,15 +76,15 @@ namespace HandyMan.Data
                     .WithMany(p => p.Handyman_SSNs)
                     .UsingEntity<Dictionary<string, object>>(
                         "Handyman_Region",
-                        l => l.HasOne<Region>().WithMany().HasForeignKey("Region_ID").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_Handyman_Region_Region"),
-                        r => r.HasOne<Handyman>().WithMany().HasForeignKey("Handyman_SSN").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_Handyman_Region_Handyman"),
+                        l => l.HasOne<Region>().WithMany().HasForeignKey("Region_ID").OnDelete(DeleteBehavior.Cascade).HasConstraintName("FK_Handyman_Region_Region"),
+                        r => r.HasOne<Handyman>().WithMany().HasForeignKey("Handyman_SSN").OnDelete(DeleteBehavior.Cascade).HasConstraintName("FK_Handyman_Region_Handyman"),
                         j =>
                         {
                             j.HasKey("Handyman_SSN", "Region_ID");
 
                             j.ToTable("Handyman_Region");
 
-                            j.IndexerProperty<int>("Handyman_SSN").ValueGeneratedOnAdd();
+                            j.IndexerProperty<int>("Handyman_SSN").ValueGeneratedNever();
                         });
             });
 
@@ -98,7 +99,7 @@ namespace HandyMan.Data
                 entity.HasOne(d => d.Request)
                     .WithMany(p => p.Payments)
                     .HasForeignKey(d => d.Request_ID)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_Payment_Request");
             });
 
@@ -110,7 +111,7 @@ namespace HandyMan.Data
 
             modelBuilder.Entity<Request>(entity =>
             {
-                entity.Property(e => e.Request_ID).ValueGeneratedNever();
+                //entity.Property(e => e.Request_ID).ValueGeneratedNever();
 
                 entity.Property(e => e.Request_Date).HasDefaultValueSql("(getdate())");
 
@@ -119,13 +120,13 @@ namespace HandyMan.Data
                 entity.HasOne(d => d.Client)
                     .WithMany(p => p.Requests)
                     .HasForeignKey(d => d.Client_ID)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_Request_Client");
 
                 entity.HasOne(d => d.Handyman_SSNNavigation)
                     .WithMany(p => p.Requests)
                     .HasForeignKey(d => d.Handyman_SSN)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_Request_Handyman");
             });
 

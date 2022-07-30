@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using HandyMan.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,24 +18,35 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IClientRepository, ClientRepository>();
 builder.Services.AddScoped<IHandymanRepository, HandymanRepository>();
-builder.Services.AddDbContext<Handyman_DBContext>(a=>a.UseLazyLoadingProxies().UseSqlServer(builder.Configuration.GetConnectionString("db")));
+builder.Services.AddScoped<IRequestRepository, RequestRepository>();
+builder.Services.AddScoped<IRegionRepository, RegionRepository>();
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+builder.Services.AddScoped<ICraftRepository, CraftRepository>();
+builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
+builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
+builder.Services.AddDbContext<Handyman_DBContext>(a => a.UseLazyLoadingProxies().UseSqlServer(builder.Configuration.GetConnectionString("db")));
 
 
 builder.Services.AddAuthorization(opt =>
 {
-    
+
     opt.AddPolicy("Admin", p =>
     {
         p.RequireClaim("Role", "Admin");
     });
+
+    opt.AddPolicy("Request", p =>
+    {
+        p.RequireClaim("Role", "Client", "Handyman", "Admin");
+    });
     opt.AddPolicy("Handyman", p =>
     {
-        p.RequireClaim("Role", "Handyman","Admin");
+        p.RequireClaim("Role", "Handyman", "Admin");
     });
 
     opt.AddPolicy("Client", p =>
     {
-        p.RequireClaim("Role", "Client","Admin");
+        p.RequireClaim("Role", "Client", "Admin");
     });
     opt.FallbackPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
 });
@@ -70,5 +82,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.UseCors(x => x
+             .AllowAnyOrigin()
+             .AllowAnyMethod()
+             .AllowAnyHeader());
 
 app.Run();

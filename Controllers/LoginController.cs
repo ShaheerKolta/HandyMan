@@ -1,4 +1,5 @@
-﻿using HandyMan.Interfaces;
+﻿using HandyMan.Dtos;
+using HandyMan.Interfaces;
 using HandyMan.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -12,12 +13,12 @@ namespace HandyMan.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthenticationController : ControllerBase
+    public class LoginController : ControllerBase
     {
         private readonly IConfiguration config;
         private readonly IHandymanRepository handymanRepository;
         private readonly IClientRepository clientRepository;
-        public AuthenticationController(IConfiguration _config, IHandymanRepository _handymanRepository, IClientRepository _clientRepository)
+        public LoginController(IConfiguration _config, IHandymanRepository _handymanRepository, IClientRepository _clientRepository)
         {
             config = _config;
             handymanRepository = _handymanRepository;
@@ -27,15 +28,23 @@ namespace HandyMan.Controllers
         public record AuthenticationData(string? UserName, string? Password, string? Role);
         public record UserData(int Id, string UserName, string Role);
 
-        [HttpPost("token")]
+        [HttpPost]
         [AllowAnonymous]
         public async Task<ActionResult<string>> Authenticate([FromBody] AuthenticationData data)
         {
-            var user = await ValidateCredentials(data);
-            if (user == null)
-                return Unauthorized();
-            var token = GenerateToken(user);
-            return Ok(token);
+            try
+            {
+                var user = await ValidateCredentials(data);
+                if (user == null)
+                    return Unauthorized();
+                var token = GenerateToken(user);
+                return Ok(new { token = token });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
 
         private string GenerateToken(UserData user)
@@ -59,7 +68,7 @@ namespace HandyMan.Controllers
                 config.GetValue<string>("Authentication:Audience"),
                 claims,
                 DateTime.Now,
-                DateTime.Now.AddHours(1),
+                DateTime.Now.AddDays(1),
                 signingCredentials
                 );
 
@@ -95,10 +104,11 @@ namespace HandyMan.Controllers
 
             else if (Compare(data.Role , "Client"))
             {
-                Client client = clientRepository.GetClientByEmail(data.UserName);
+                Client client = await clientRepository.GetClientByEmail(data.UserName);
+                
                 if (client == null)
                     return null;
-                if (Compare(data.UserName, client.Client_ID.ToString()) && Compare(data.Password, client.Password))
+                if (Compare(data.UserName, client.Client_Email) && Compare(data.Password, client.Password))
                 {
                     return new UserData(client.Client_ID, client.Client_name, "Client");
                 }
