@@ -329,7 +329,7 @@ namespace HandyMan.Controllers
                     return BadRequest(new {message="Request already Exists !"});
 
                 //request_date is the time for handyman arrival while Request_order_date is the time when request is made
-                if (request.Request_Date < DateTime.Now && request.Request_Date < DateTime.Now.AddHours(2) && request.Request_Order_Date < DateTime.Now)
+                if (request.Request_Date < DateTime.Now.AddHours(2) && request.Request_Order_Date < DateTime.Now)
                     return BadRequest(new { message = "Invalid Request time!" });
 
                 var prevRequest = await _requestRepository.GetPrevRequest(request.Client_ID,0);
