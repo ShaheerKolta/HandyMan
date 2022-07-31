@@ -38,7 +38,7 @@ namespace HandyMan.Controllers
                 if (user == null)
                     return Unauthorized();
                 var token = GenerateToken(user);
-                return Ok(new { token = token });
+                return Ok(new { token = token , userId=user.Id});
             }
             catch (Exception ex)
             {
