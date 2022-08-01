@@ -37,8 +37,8 @@ namespace HandyMan.Dtos
         [Range(-99, 99)]
         public int? Balance { get; set; } = 0;
 
-        [Range(1, 5)]
-        public double? Rating { get; set; }
+        
+        public double? Rating { get; set; } = 0;
 
     }
 }

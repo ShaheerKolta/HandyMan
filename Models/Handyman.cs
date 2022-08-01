@@ -46,9 +46,8 @@ namespace HandyMan.Models
 
         public int? Balance { get; set; } = 0;
 
-        [NotMapped]
         [Range(1, 5)]
-        public double? Rating { get; set; }
+        public double? Rating { get; set; } = 0;
 
         [ForeignKey("CraftID")]
         [InverseProperty("Handymen")]
