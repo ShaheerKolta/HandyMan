@@ -38,8 +38,8 @@ namespace HandyMan.Dtos
 
         public int? Balance { get; set; } = 0;
 
-        [Range(1, 5)]
-        public double? Rating { get; set; }
+
+        public double? Rating { get; set; } = 0;
         public virtual ICollection<RequestDto>? Requests { get; set; }
 
         public virtual ICollection<ScheduleDto>? Schedules { get; set; }
