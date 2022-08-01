@@ -149,27 +149,35 @@ namespace HandyMan.Controllers
         // GET: api/Handyman/5
         //is the same attributes going to show to user and handyman himself ??
         [HttpGet("{id}")]
-        [Authorize(Policy = "Handyman")]
+        [AllowAnonymous]
 
         // Problem -> Need to be accessed using client to activate the Request Functionalities 
         // Suggessted Solution is to create a special GetHandmanbyIDRequest 
-        public async Task<ActionResult<HandymanDto>> GetHandyman(int id, [FromHeader] string Authorization)
+        public async Task<ActionResult<HandymanDto>> GetHandyman(int id, [FromHeader] string? Authorization)
         {
-            JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
-            var x = t.Claims.ToList();
             
-            if (x[0].Value !=id.ToString() && x[2].Value != "Admin")
+            if(Authorization != null)
             {
-                return Unauthorized();
+                JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
+                var x = t.Claims.ToList();
+
+                if (x[2].Value == "Handyman" && x[0].Value != id.ToString())
+                {
+                    return Unauthorized();
+                }
             }
+            
             try
             {
-                
                 var handyman = await handymanRepository.GetHandymanByIdAsync(id);
                 handymanRepository.CalculateHandymanRate(handyman);
                 if (handyman == null)
                 {
                     return NotFound(new { message = "Handyman Is Not Found!" });
+                }
+                if (Authorization == null)
+                {
+                    handyman.Schedules = null;
                 }
                 return _mapper.Map<HandymanDto>(handyman);
 
