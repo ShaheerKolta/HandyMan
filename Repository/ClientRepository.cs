@@ -52,6 +52,7 @@ namespace HandyMan.Repository
                 }
                 client.Rating = sum / count;
             }
+            _context.SaveChanges();
         }
 
         public async void CreateClient(Client client)

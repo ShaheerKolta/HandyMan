@@ -73,6 +73,7 @@ namespace HandyMan.Repository
                 }
                 handyman.Rating = sum / count;
             }
+            context.SaveChanges();
         }
 
         public bool ApproveHandymanById(Handyman handyman)
