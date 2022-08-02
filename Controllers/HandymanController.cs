@@ -165,7 +165,7 @@ namespace HandyMan.Controllers
                     return NotFound(new { message = "Handyman Is Not Found!" });
                 }
 
-                if (Authorization != null)
+                if (Authorization != "Bearer null")
                 {
                     JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
                     var x = t.Claims.ToList();
