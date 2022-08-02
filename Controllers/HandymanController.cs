@@ -156,17 +156,6 @@ namespace HandyMan.Controllers
         public async Task<ActionResult<HandymanDto>> GetHandyman(int id, [FromHeader] string? Authorization)
         {
             
-            if(Authorization != null)
-            {
-                JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
-                var x = t.Claims.ToList();
-
-                if (x[2].Value == "Handyman" && x[0].Value != id.ToString())
-                {
-                    return Unauthorized();
-                }
-            }
-            
             try
             {
                 var handyman = await handymanRepository.GetHandymanByIdAsync(id);
@@ -175,9 +164,25 @@ namespace HandyMan.Controllers
                 {
                     return NotFound(new { message = "Handyman Is Not Found!" });
                 }
-                if (Authorization == null)
+
+                if (Authorization != null)
+                {
+                    JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
+                    var x = t.Claims.ToList();
+
+                    if (x[2].Value == "Handyman" && x[0].Value != id.ToString())
+                    {
+                        return Unauthorized();
+                    }
+                    if (x[2].Value == "Client")
+                    {
+                        handyman.Requests=null;
+                    }
+                }
+                else
                 {
                     handyman.Schedules = null;
+                    handyman.Requests = null;
                 }
                 return _mapper.Map<HandymanDto>(handyman);
 
