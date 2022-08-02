@@ -69,27 +69,28 @@ namespace HandyMan.Controllers
                 }
                 if (x[2].Value == "Client" && x[0].Value == request.Client_ID.ToString())
                 {
+
+                    var requestToReturn = _mapper.Map<RequestDto>(request);
+                    var handyman = await _requestRepository.GetHandymanFromRequestByIdAsync(request.Handyman_SSN);
                     if (request.Request_Status == 2 && request.Request_Date >= DateTime.Now)
                     {
-                        var requestToReturn = _mapper.Map<RequestDto>(request);
-                        var handyman =await _requestRepository.GetHandymanFromRequestByIdAsync(request.Handyman_SSN);
-                        return Ok(new { request = requestToReturn, handymanPhone = handyman.Handyman_Mobile });
+                        return Ok(new { request = requestToReturn, handymanName=handyman.Handyman_Name, handymanPhone = handyman.Handyman_Mobile });
                     }
                     
-                    return _mapper.Map<RequestDto>(request);
+                    return Ok(new { request = requestToReturn, handymanName = handyman.Handyman_Name }); ;
                 }
 
 
                 if (x[2].Value == "Handyman" && x[0].Value == request.Handyman_SSN.ToString())
                 {
+                    var requestToReturn = _mapper.Map<RequestDto>(request);
+                    var client = await _requestRepository.GetClientFromRequestByIdAsync(request.Client_ID);
                     if (request.Request_Status == 2 && request.Request_Date >= DateTime.Now)
                     {
-                        var requestToReturn = _mapper.Map<RequestDto>(request);
-                        var client = await _requestRepository.GetClientFromRequestByIdAsync(request.Client_ID);
-                        return Ok(new { request = requestToReturn, clientPhone = client.Client_Mobile, clientAdress = client.Client_Address }); ;
+                        return Ok(new { request = requestToReturn,clientName=client.Client_name, clientPhone = client.Client_Mobile, clientAdress = client.Client_Address });
                     }
 
-                    return _mapper.Map<RequestDto>(request);
+                    return Ok(new { request = requestToReturn, clientName = client.Client_name });
                 }
                 if (x[2].Value == "Admin")
                     return _mapper.Map<RequestDto>(request);
