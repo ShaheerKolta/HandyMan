@@ -233,6 +233,22 @@ namespace HandyMan.Controllers
                 return Problem("Handyman is Empty");
             }
             var handyman = _mapper.Map<Handyman>(handymandto);
+            if (handyman.Handyman_Photo != null)
+            {
+                string[] photo = handyman.Handyman_Photo.ToString().Split('/');
+                handyman.Handyman_Photo = "https://drive.google.com/uc?export=view&id=" + photo[5];
+            }
+            if (handyman.Handyman_Criminal_Record != null)
+            {
+                string[] photo = handyman.Handyman_Criminal_Record.ToString().Split('/');
+                handyman.Handyman_Criminal_Record = "https://drive.google.com/uc?export=view&id=" + photo[5];
+            }
+            if (handyman.Handyman_ID_Image != null)
+            {
+                string[] photo = handyman.Handyman_ID_Image.ToString().Split('/');
+                handyman.Handyman_ID_Image = "https://drive.google.com/uc?export=view&id=" + photo[5];
+            }
+
             handymanRepository.CreateHandyman(handyman);
             try
             {
