@@ -50,7 +50,8 @@ namespace HandyMan.Repository
                         count++;
                     }
                 }
-                client.Rating = (sum / count)%5;
+                if (count > 0)
+                    client.Rating = (sum / count)%5;
             }
             _context.SaveChanges();
         }

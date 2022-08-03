@@ -71,7 +71,8 @@ namespace HandyMan.Repository
                         count++;
                     }
                 }
-                handyman.Rating = (sum / count)%5;
+                if (count > 0)
+                    handyman.Rating = (sum / count)%5;
             }
             context.SaveChanges();
         }
