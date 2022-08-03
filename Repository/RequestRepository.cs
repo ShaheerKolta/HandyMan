@@ -154,7 +154,7 @@ namespace HandyMan.Repository
             var requests = await _context.Requests.Where(c => c.Client_ID == id).ToListAsync();
             foreach (var requ in requests)
             {
-                if (requ.Request_Status == 1 && requ.Request_Order_Date.AddMinutes(30) < DateTime.Now)
+                if ((requ.Request_Status == 1|| requ.Request_Status == 0) && requ.Request_Order_Date.AddMinutes(30) < DateTime.Now)
                 {
                     requ.Request_Status = 4;
                     EditRequest(requ);
