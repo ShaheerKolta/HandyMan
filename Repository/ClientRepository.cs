@@ -38,22 +38,29 @@ namespace HandyMan.Repository
 
         public void CalculateClientRate(Client client)
         {
-            var requests = client.Requests;
-            if(requests != null)
+            try
             {
-                double sum = 0, count = 0;
-                foreach (var req in requests)
+                var requests = client.Requests;
+                if (requests != null)
                 {
-                    if (req.Client_Rate != null)
+                    double sum = 0, count = 0;
+                    foreach (var req in requests)
                     {
-                        sum += (int)req.Client_Rate;
-                        count++;
+                        if (req.Client_Rate != null)
+                        {
+                            sum += (int)req.Client_Rate;
+                            count++;
+                        }
                     }
+                    if (count > 0)
+                        client.Rating = (sum / count) % 5;
                 }
-                if (count > 0)
-                    client.Rating = (sum / count)%5;
+                _context.SaveChanges();
             }
-            _context.SaveChanges();
+            catch
+            {
+                return;
+            }
         }
 
         public async void CreateClient(Client client)

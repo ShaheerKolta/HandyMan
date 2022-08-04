@@ -59,22 +59,31 @@ namespace HandyMan.Repository
 
         public void CalculateHandymanRate(Handyman handyman)
         {
-            var requests = handyman.Requests;
-            if (requests != null)
+            try
             {
-                double sum = 0, count = 0;
-                foreach (var req in requests)
+                var requests = handyman.Requests;
+                if (requests != null)
                 {
-                    if (req.Handy_Rate != null)
+                    double sum = 0, count = 0;
+                    foreach (var req in requests)
                     {
-                        sum += (int)req.Handy_Rate;
-                        count++;
+                        if (req.Handy_Rate != null)
+                        {
+                            sum += (int)req.Handy_Rate;
+                            count++;
+                        }
                     }
+                    if (count > 0)
+                        handyman.Rating = (sum / count) % 5;
                 }
-                if (count > 0)
-                    handyman.Rating = (sum / count)%5;
+                context.SaveChanges();
             }
-            context.SaveChanges();
+            catch
+            {
+                return;
+            }
+            
+            
         }
 
         public bool ApproveHandymanById(Handyman handyman)
