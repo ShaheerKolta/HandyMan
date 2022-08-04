@@ -116,6 +116,22 @@ namespace HandyMan.Repository
             _context.Entry(request).State = EntityState.Modified;
         }
 
+        public void AddRequestReview(Request request ,int rate, string review, int role)//role =0 client , role==1 handyman
+        {
+            if (role == 0)
+            {
+                request.Handy_Rate = rate;
+                if(review != null)
+                    request.Handy_Review = review;
+            }
+            else
+            {
+                request.Client_Rate = rate;
+                if (review != null)
+                    request.Client_Review = review;
+            }
+        }
+
         public void DeleteRequestById(int id)
         {
             _context.Requests.Remove(_context.Requests.Find(id));

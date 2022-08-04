@@ -11,6 +11,7 @@ using HandyMan.Interfaces;
 using HandyMan.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.IdentityModel.Tokens.Jwt;
+using Newtonsoft.Json.Linq;
 
 namespace HandyMan.Controllers
 {
@@ -294,6 +295,46 @@ namespace HandyMan.Controllers
             try
             {
                 await _requestRepository.SaveAllAsync();
+            }
+
+            catch
+            {
+                return BadRequest();
+            }
+
+            return NoContent();
+        }
+
+
+        [HttpPut("review/{id}")]
+        [Authorize(Policy = "Request")] // tested
+        public async Task<IActionResult> AddRequestReview(int id, [FromHeader] string Authorization,[FromBody] JObject data)
+        {
+            int rate = data["rate"].ToObject<int>(); 
+            string review = data["review"].ToObject<String>();
+
+
+            try
+            {
+                JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
+                var x = t.Claims.ToList();
+                var request = await _requestRepository.GetRequestByIdAsync(id);
+                if (request == null)
+                    return BadRequest(new { message = "Request Doesn't Exist" });
+
+                if (x[0].Value == request.Client_ID.ToString() && x[2].Value == "Client")
+                {
+                    _requestRepository.AddRequestReview(request, rate, review, 0);
+                    await _requestRepository.SaveAllAsync();
+                    return Ok();
+                }
+                else if (x[0].Value == request.Handyman_SSN.ToString() && x[2].Value == "Handyman")
+                {
+                    _requestRepository.AddRequestReview(request, rate, review, 1);
+                    await _requestRepository.SaveAllAsync();
+                    return Ok();
+                }
+                return BadRequest(new {message="Authentication Failed"});
             }
 
             catch

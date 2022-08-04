@@ -18,6 +18,7 @@ namespace HandyMan.Interfaces
         void CreatePaymentByRequestId(Request request);
         void CancelByRequestId(int id , int role);
         void EditRequest(Request request);
+        void AddRequestReview(Request request, int rate , string review , int role);
         void DeleteRequestById(int id);
         Task<bool> SaveAllAsync();
     }
