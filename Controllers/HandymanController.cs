@@ -159,12 +159,11 @@ namespace HandyMan.Controllers
             try
             {
                 var handyman = await handymanRepository.GetHandymanByIdAsync(id);
-                handymanRepository.CalculateHandymanRate(handyman);
                 if (handyman == null)
                 {
                     return NotFound(new { message = "Handyman Is Not Found!" });
                 }
-
+                handymanRepository.CalculateHandymanRate(handyman);
                 if (Authorization != "Bearer null")
                 {
                     JwtSecurityToken t = (JwtSecurityToken)new JwtSecurityTokenHandler().ReadToken(Authorization.Substring(7));
