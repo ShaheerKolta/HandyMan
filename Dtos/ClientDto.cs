@@ -34,6 +34,8 @@ namespace HandyMan.Dtos
         // public int Region_Name { get; set; }
 
         public virtual ICollection<RequestDto>? Requests { get; set; }
+        
+        public string Password { get; set; }
 
         [Range(-99, 99)]
         public int? Balance { get; set; } = 0;
