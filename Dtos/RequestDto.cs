@@ -40,8 +40,8 @@ namespace HandyMan.Dtos
         public string? Handy_Review { get; set; }
 
         public virtual ICollection<PaymentDto>? Payments { get; set; }
-        public virtual Client? Client { get; set; }
+        public virtual ClientDto? Client { get; set; }
 
-        public bool Method { get; set; }
+        public string Method { get; set; }
     }
 }

@@ -270,7 +270,7 @@ namespace HandyMan.Controllers
                 
                 await _requestRepository.SaveAllAsync();
                 var clientToReturn= _mapper.Map<ClientDto>(await _requestRepository.GetClientFromRequestByIdAsync(request.Client_ID));
-                return Ok(new {phone=clientToReturn.Client_Mobile , address=clientToReturn.Client_Address});
+                return Ok(new {request_ID =request.Request_ID ,phone=clientToReturn.Client_Mobile , address=clientToReturn.Client_Address});
             }
             catch
             {

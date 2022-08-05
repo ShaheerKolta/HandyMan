@@ -46,7 +46,7 @@ namespace HandyMan.Models
         [Unicode(false)]
         public string? Handy_Review { get; set; }
         [NotMapped]
-        public bool Method { get; set; }
+        public string Method { get; set; }
 
         [ForeignKey("Client_ID")]
         [InverseProperty("Requests")]

@@ -26,9 +26,10 @@ namespace HandyMan.Dtos
         [StringLength(11)]
         public string Client_Mobile { get; set; }
 
-        public string Password { get; set; }
 
         public int Region_ID { get; set; }
+
+        public virtual RegionDto Region { get; set; }
 
         // public int Region_Name { get; set; }
 

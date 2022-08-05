@@ -49,7 +49,11 @@ namespace HandyMan.Repository
 
         public async void CreatePaymentByRequestId(Request request)
         {
-            Payment payment = new Payment { Method = request.Method };
+            Payment payment;
+            if(request.Method == "Cash")
+                payment = new Payment { Method = false };
+            else 
+                payment = new Payment { Method = true };
             var handyman = _context.Handymen.Find(request.Handyman_SSN);
             var fixedRate = handyman.Handyman_Fixed_Rate;
             var client = _context.Clients.Find(request.Client_ID);
