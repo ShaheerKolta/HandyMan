@@ -158,7 +158,7 @@ namespace HandyMan.Repository
 
         public async Task<IEnumerable<Request>> GetActiveRequestsByHandymanSsnAsync(int handymanSsn)
         {
-            return await _context.Requests.Where(c => c.Handyman_SSN == handymanSsn && c.Request_Status == 1).ToListAsync();
+            return await _context.Requests.Where(c => c.Handyman_SSN == handymanSsn && (c.Request_Status == 1 || c.Request_Status == 0)).ToListAsync();
         }
 
 
