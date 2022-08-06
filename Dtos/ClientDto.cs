@@ -29,7 +29,7 @@ namespace HandyMan.Dtos
 
         public int Region_ID { get; set; }
 
-        public virtual RegionDto Region { get; set; }
+        public virtual RegionDto? Region { get; set; }
 
         // public int Region_Name { get; set; }
 
